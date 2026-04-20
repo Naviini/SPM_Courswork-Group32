@@ -1,6 +1,6 @@
 .locator-page {
-  background: #ffffff;
-  color: #000000;
+  background: #e9ecef;
+  color: #101318;
 }
 
 .locator-utility-inner {
@@ -40,7 +40,7 @@
   width: 18px;
   height: 10px;
   border-radius: 2px;
-  background: #0d7377;
+  background: #ffe000;
   margin-bottom: 2px;
 }
 
@@ -61,7 +61,7 @@
   width: 24px;
   height: 24px;
   fill: none;
-  stroke: #0d7377;
+  stroke: #1d222c;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -119,8 +119,8 @@
 }
 
 .locator-sidebar {
-  background: #ffffff;
-  border: 1px solid #0d7377;
+  background: #eef0f3;
+  border: 1px solid #d4dae3;
   padding: 22px 16px 18px;
   overflow: auto;
   max-height: calc(100vh - 164px);
@@ -128,7 +128,7 @@
 
 .locator-sidebar h1 {
   margin: 0 0 14px;
-  color: #000000;
+  color: #0d1521;
   font-size: 2rem;
   line-height: 1.03;
 }
@@ -142,10 +142,10 @@
 .locator-search-form input,
 .locator-category-box select {
   width: 100%;
-  border: 1px solid #0d7377;
+  border: 1px solid #b6bfcc;
   border-radius: 6px;
   background: #fff;
-  color: #000000;
+  color: #202833;
   font-size: 1.02rem;
   min-height: 48px;
   padding: 0 14px;
@@ -154,7 +154,7 @@
 .locator-search-form button {
   border: 0;
   border-radius: 6px;
-  background: #0d7377;
+  background: #0046be;
   color: #fff;
   font-size: 1.05rem;
   font-weight: 800;
@@ -164,7 +164,7 @@
 .locator-current-location,
 .store-details-link,
 .locator-filter-link {
-  color: #000000;
+  color: #154fb8;
   font-weight: 600;
 }
 
@@ -175,20 +175,20 @@
 
 .locator-category-box {
   margin-top: 16px;
-  border-bottom: 1px solid #0d7377;
+  border-bottom: 1px solid #d2d8e1;
   padding-bottom: 16px;
 }
 
 .locator-category-box h2 {
   margin: 0;
-  color: #000000;
+  color: #061424;
   font-size: 1.4rem;
   line-height: 1.1;
 }
 
 .locator-category-box p {
   margin: 10px 0 14px;
-  color: #000000;
+  color: #2f3945;
   font-size: 0.96rem;
 }
 
@@ -201,7 +201,7 @@
 
 .locator-category-box select {
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, #0d7377 50%), linear-gradient(135deg, #0d7377 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, #4f5967 50%), linear-gradient(135deg, #4f5967 50%, transparent 50%);
   background-position: calc(100% - 22px) calc(1em + 6px), calc(100% - 16px) calc(1em + 6px);
   background-size: 6px 6px, 6px 6px;
   background-repeat: no-repeat;
@@ -221,14 +221,14 @@
 
 .locator-store-card {
   position: relative;
-  border: 1px solid #0d7377;
+  border: 1px solid #cad2de;
   border-radius: 6px;
   background: #fff;
   padding: 14px 14px 12px;
 }
 
 .locator-store-card-active {
-  border: 2px solid #0d7377;
+  border: 2px solid #202833;
 }
 
 .locator-store-chip {
@@ -238,7 +238,7 @@
   transform: translateY(-100%);
   padding: 7px 15px;
   border-radius: 8px 8px 0 0;
-  background: #0d7377;
+  background: #0046be;
   color: #fff;
   font-size: 0.78rem;
   line-height: 1;
@@ -247,7 +247,7 @@
 
 .locator-store-card h3 {
   margin: 0;
-  color: #000000;
+  color: #0f2342;
   font-size: 1.04rem;
   line-height: 1.2;
 }
@@ -256,7 +256,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #0d7377;
+  background: #1a49d1;
   color: #fff;
   display: inline-grid;
   place-items: center;
@@ -267,14 +267,14 @@
 
 .store-distance {
   margin: 4px 0 8px 32px;
-  color: #000000;
+  color: #10151c;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
 .locator-store-card address {
   margin: 0 0 8px 32px;
-  color: #000000;
+  color: #233042;
   font-size: 0.88rem;
   line-height: 1.35;
   font-style: normal;
@@ -288,7 +288,7 @@
 
 .store-hours {
   margin: 7px 0 0 32px;
-  color: #000000;
+  color: #0f1520;
   font-size: 0.88rem;
   font-weight: 700;
 }
@@ -297,29 +297,29 @@
   width: 100%;
   min-height: 38px;
   margin-top: 10px;
-  border: 1px solid #0d7377;
+  border: 1px solid #1d57c0;
   border-radius: 5px;
   background: #fff;
-  color: #000000;
+  color: #0d4fb8;
   font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
 }
 
 .store-select-button.store-select-button-active {
-  background: #0d7377;
+  background: #0046be;
   color: #fff;
-  border-color: #ffffff;
+  border-color: #0046be;
 }
 
 .store-primary-button {
   width: 100%;
   min-height: 48px;
   margin-top: 14px;
-  border: 1px solid #0d7377;
+  border: 1px solid #1d57c0;
   border-radius: 5px;
   background: #fff;
-  color: #000000;
+  color: #0d4fb8;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -327,8 +327,8 @@
 
 .locator-expert-card {
   margin-top: 16px;
-  border: 1px solid #0d7377;
-  background: #ffffff;
+  border: 1px solid #cad2de;
+  background: #f0f2f5;
   display: grid;
   grid-template-columns: 110px 1fr;
   gap: 14px;
@@ -344,14 +344,14 @@
 
 .locator-expert-card h3 {
   margin: 2px 0 8px;
-  color: #000000;
+  color: #0d1520;
   font-size: 2rem;
   line-height: 1.12;
 }
 
 .locator-expert-card p {
   margin: 0;
-  color: #000000;
+  color: #273240;
   font-size: 1.08rem;
 }
 
@@ -361,7 +361,7 @@
   margin-top: 16px;
   border: 0;
   border-radius: 5px;
-  background: #0d7377;
+  background: #0046be;
   color: #fff;
   font-size: 1rem;
   font-weight: 700;
@@ -369,8 +369,8 @@
 }
 
 .locator-map-shell {
-  border: 1px solid #0d7377;
-  background: #0d7377;
+  border: 1px solid #cad2de;
+  background: #dde3ea;
 }
 
 .locator-map-stage {
@@ -399,9 +399,9 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 2px solid #0d7377;
+  border: 2px solid #525a66;
   background: rgba(255, 255, 255, 0.9);
-  color: #000000;
+  color: #2b3138;
   font-size: 1.8rem;
   line-height: 1;
   cursor: pointer;
@@ -426,13 +426,13 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #0d7377;
+  background: #0c369b;
   color: #fff;
   display: grid;
   place-items: center;
   font-size: 1.05rem;
   font-weight: 800;
-  box-shadow: 0 8px 18px rgba(13, 115, 119, 0.35);
+  box-shadow: 0 8px 18px rgba(5, 18, 48, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
@@ -445,17 +445,17 @@
   width: 10px;
   height: 10px;
   border-radius: 0 0 3px 0;
-  background: #0d7377;
+  background: #0c369b;
 }
 
 .locator-marker-icon.is-active span {
-  background: #0d7377;
+  background: #002f93;
   transform: scale(1.08);
-  box-shadow: 0 10px 22px rgba(13, 115, 119, 0.45), 0 0 0 4px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 22px rgba(5, 18, 48, 0.45), 0 0 0 4px rgba(255, 255, 255, 0.7);
 }
 
 .locator-marker-icon.is-active span::after {
-  background: #0d7377;
+  background: #002f93;
 }
 
 .sr-only {
@@ -550,7 +550,7 @@
     align-items: center;
     gap: 8px;
     margin: 8px 0 10px;
-    background: #0d7377;
+    background: #0046be;
     color: #fff;
     border-radius: 0 18px 0 0;
     padding: 12px 18px;

@@ -1,12 +1,12 @@
 :root {
-  --bb-blue: #0d7377;
-  --bb-yellow: #0d7377;
-  --ink: #000000;
-  --muted: #333333;
-  --line: #d9d9d9;
-  --bg: #ffffff;
+  --bb-blue: #0046be;
+  --bb-yellow: #ffe000;
+  --ink: #1b2430;
+  --muted: #5f6675;
+  --line: #d7dce4;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --chip: #ffffff;
+  --chip: #eceef1;
 }
 
 * {
@@ -25,7 +25,7 @@ body.phones-page {
 }
 
 a {
-  color: #000000;
+  color: #1f58ca;
   text-decoration: none;
 }
 
@@ -45,7 +45,7 @@ select {
   z-index: 30;
   background: var(--surface);
   border-top: 4px solid var(--bb-blue);
-  border-bottom: 1px solid #0d7377;
+  border-bottom: 1px solid #e2e6ec;
 }
 
 .phones-header-shell {
@@ -63,17 +63,17 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #000000;
+  color: #0f1d31;
 }
 
 .brand-mark {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #000000;
+  background: linear-gradient(135deg, #1075ff, #00379f);
   color: #fff;
   font-weight: 800;
 }
@@ -93,14 +93,14 @@ select {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 8px 14px;
-  color: #000000;
+  color: #17387c;
   font-weight: 700;
-  background: #ffffff;
+  background: #f8faff;
 }
 
 .back-link:hover {
   text-decoration: none;
-  background: #ffffff;
+  background: #edf3ff;
 }
 
 .phones-main {
@@ -126,7 +126,7 @@ select {
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   background: var(--surface);
-  border: 1px solid #0d7377;
+  border: 1px solid #dce2ea;
   border-radius: 16px;
 }
 
@@ -135,13 +135,13 @@ select {
 }
 
 .catalog-sidebar::-webkit-scrollbar-thumb {
-  background: #0d7377;
+  background: #bec7d4;
   border-radius: 999px;
 }
 
 .filter-section {
   padding: 16px 18px;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid #e8edf3;
 }
 
 .filter-section:last-child {
@@ -158,27 +158,27 @@ select {
   grid-template-columns: auto 1fr;
   gap: 10px;
   align-items: start;
-  color: #000000;
+  color: #283342;
   line-height: 1.35;
 }
 
 .check-row small {
   display: block;
-  color: #000000;
+  color: #2c66db;
   font-size: 0.95em;
 }
 
 .filter-note {
   margin: 8px 0 4px;
-  color: #000000;
+  color: #71798a;
 }
 
 input[type="checkbox"] {
   width: 20px;
   height: 20px;
   margin: 0;
-  border: 1px solid #0d7377;
-  accent-color: #000000;
+  border: 1px solid #bac3d1;
+  accent-color: #1c62d9;
 }
 
 .text-filter-links {
@@ -186,20 +186,10 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
-.product-card-clickable {
-  cursor: pointer;
-}
-
-.product-card-clickable:focus-visible,
-.new-rail-card:focus-visible {
-  outline: 2px solid rgba(13, 115, 119, 0.6);
-  outline-offset: 2px;
-}
-
 .link-button {
   border: 0;
   background: transparent;
-  color: #000000;
+  color: #2864df;
   text-align: left;
   padding: 0;
   cursor: pointer;
@@ -210,14 +200,14 @@ input[type="checkbox"] {
 }
 
 .link-button.is-active {
-  color: #000000;
+  color: #0f3d9e;
   font-weight: 700;
 }
 
 .filter-search {
   width: 100%;
   min-height: 36px;
-  border: 1px solid #0d7377;
+  border: 1px solid #b8c2d1;
   border-radius: 4px;
   padding: 0 10px;
 }
@@ -232,7 +222,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #000000;
+  color: #2c3340;
 }
 
 .option-list.compact-list {
@@ -251,7 +241,7 @@ input[type="checkbox"] {
   margin-top: 8px;
   border: 0;
   background: transparent;
-  color: #000000;
+  color: #2864df;
   font-weight: 700;
   padding: 0;
   cursor: pointer;
@@ -264,7 +254,7 @@ input[type="checkbox"] {
 }
 
 .condition-card {
-  border: 1px solid #0d7377;
+  border: 1px solid #cbd3df;
   border-radius: 8px;
   min-height: 112px;
   padding: 10px;
@@ -272,7 +262,7 @@ input[type="checkbox"] {
   gap: 6px;
   align-content: start;
   cursor: pointer;
-  background: #ffffff;
+  background: #fbfcfe;
 }
 
 .condition-card input {
@@ -281,14 +271,14 @@ input[type="checkbox"] {
 }
 
 .condition-card small {
-  color: #000000;
+  color: #6f7687;
   line-height: 1.25;
 }
 
 .condition-card:has(input:checked) {
-  border-color: #000000;
-  box-shadow: inset 0 0 0 1px rgba(13, 115, 119, 0.3);
-  background: #ffffff;
+  border-color: #1d58ca;
+  box-shadow: inset 0 0 0 1px rgba(29, 88, 202, 0.3);
+  background: #eef4ff;
 }
 
 .price-input-row {
@@ -300,16 +290,16 @@ input[type="checkbox"] {
 
 .price-input-row input {
   min-height: 36px;
-  border: 1px solid #0d7377;
+  border: 1px solid #b8c2d1;
   border-radius: 8px;
   padding: 0 10px;
 }
 
 .price-input-row button {
   min-height: 36px;
-  border: 1px solid #0d7377;
+  border: 1px solid #c1c9d7;
   border-radius: 8px;
-  background: #ffffff;
+  background: #f2f4f8;
   cursor: pointer;
 }
 
@@ -324,7 +314,7 @@ input[type="checkbox"] {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  color: #000000;
+  color: #647084;
   font-size: 0.95rem;
 }
 
@@ -342,7 +332,7 @@ input[type="checkbox"] {
 }
 
 .catalog-title-row h1 span {
-  color: #000000;
+  color: #3f4654;
   font-weight: 600;
 }
 
@@ -350,14 +340,14 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #000000;
+  color: #4d5563;
   font-size: 0.95rem;
 }
 
 .sort-select select {
   min-width: 118px;
   min-height: 32px;
-  border: 1px solid #0d7377;
+  border: 1px solid #bcc5d2;
   border-radius: 7px;
   padding: 0 10px;
   background: #fff;
@@ -376,16 +366,16 @@ input[type="checkbox"] {
   border-radius: 999px;
   padding: 8px 14px;
   background: var(--chip);
-  color: #000000;
+  color: #2d3440;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
 }
 
 .quick-chip.is-active {
-  background: #ffffff;
-  border-color: #000000;
-  color: #000000;
+  background: #d9e8ff;
+  border-color: #99b9f5;
+  color: #1548aa;
 }
 
 .product-grid {
@@ -415,7 +405,7 @@ input[type="checkbox"] {
   align-items: center;
   min-height: 20px;
   border-radius: 5px;
-  background: #0d7377;
+  background: #1f60d7;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 800;
@@ -430,9 +420,9 @@ input[type="checkbox"] {
   width: 30px;
   height: 30px;
   border-radius: 999px;
-  border: 1px solid #0d7377;
+  border: 1px solid #c7d0de;
   background: #fff;
-  color: #000000;
+  color: #758199;
   font-size: 1.1rem;
   cursor: pointer;
 }
@@ -441,8 +431,8 @@ input[type="checkbox"] {
   margin-top: 0;
   min-height: 234px;
   border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #ffffff;
+  background: #f4f6f9;
+  border: 1px solid #e6ebf1;
   display: grid;
   place-items: center;
 }
@@ -455,7 +445,7 @@ input[type="checkbox"] {
 
 .product-sponsored {
   margin-top: 4px;
-  color: #000000;
+  color: #6a7282;
   font-size: 0.74rem;
 }
 
@@ -468,7 +458,7 @@ input[type="checkbox"] {
 
 .product-subtitle {
   margin: 0 0 2px;
-  color: #000000;
+  color: #50586b;
   font-size: 0.95rem;
 }
 
@@ -482,7 +472,7 @@ input[type="checkbox"] {
   width: 36px;
   height: 36px;
   border-radius: 7px;
-  border: 1px solid #0d7377;
+  border: 1px solid #c3ccda;
   background: #fff;
   display: grid;
   place-items: center;
@@ -496,13 +486,13 @@ input[type="checkbox"] {
 }
 
 .product-rating {
-  color: #000000;
+  color: #f4bd00;
   font-size: 0.94rem;
   font-weight: 700;
 }
 
 .product-rating span {
-  color: #000000;
+  color: #1e57c6;
 }
 
 .product-dealline {
@@ -517,12 +507,12 @@ input[type="checkbox"] {
 }
 
 .product-save {
-  color: #000000;
+  color: #ce2020;
   font-weight: 800;
 }
 
 .product-compare-value {
-  color: #000000;
+  color: #697285;
   font-size: 0.82rem;
 }
 
@@ -533,24 +523,24 @@ input[type="checkbox"] {
   min-height: 24px;
   border-radius: 5px;
   padding: 0 8px;
-  background: #ffffff;
+  background: #f5ecad;
   font-weight: 700;
   font-size: 0.88rem;
 }
 
 .product-more {
   font-size: 0.92rem;
-  color: #000000;
+  color: #394255;
 }
 
 .product-more span {
-  color: #000000;
+  color: #1854c3;
   font-weight: 700;
 }
 
 .product-delivery {
   margin: 2px 0;
-  color: #000000;
+  color: #2e3644;
   font-size: 0.94rem;
 }
 
@@ -588,7 +578,7 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #000000;
+  color: #4f5868;
   font-size: 0.95rem;
   white-space: nowrap;
 }
@@ -608,15 +598,15 @@ input[type="checkbox"] {
 
 .catalog-footer-row {
   text-align: center;
-  color: #000000;
+  color: #2e3643;
   font-weight: 700;
 }
 
 .new-rail {
   margin-top: 8px;
-  border: 1px solid #0d7377;
+  border: 1px solid #dce2ea;
   border-radius: 12px;
-  background: #ffffff;
+  background: #eceff4;
   padding: 12px;
 }
 
@@ -634,10 +624,9 @@ input[type="checkbox"] {
 
 .new-rail-card {
   background: #fff;
-  border: 1px solid #0d7377;
+  border: 1px solid #dbe2ec;
   border-radius: 10px;
   padding: 10px;
-  cursor: pointer;
 }
 
 .new-rail-card img {
@@ -656,10 +645,10 @@ input[type="checkbox"] {
   bottom: 0;
   transform: translateX(-50%);
   width: min(var(--site-max-width), calc(100vw - 12px));
-  border: 1px solid #0d7377;
+  border: 1px solid #cad2de;
   border-radius: 12px 12px 0 0;
   background: #fff;
-  box-shadow: 0 -8px 30px rgba(13, 115, 119, 0.18);
+  box-shadow: 0 -8px 30px rgba(7, 17, 33, 0.18);
   transition: transform 0.2s ease;
   z-index: 60;
 }
@@ -671,7 +660,7 @@ input[type="checkbox"] {
 .compare-topbar {
   min-height: 54px;
   padding: 0 16px;
-  border-bottom: 1px solid #0d7377;
+  border-bottom: 1px solid #e0e6ef;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -680,9 +669,9 @@ input[type="checkbox"] {
 
 .compare-topbar button {
   min-height: 32px;
-  border: 1px solid #0d7377;
+  border: 1px solid #c2cada;
   border-radius: 999px;
-  background: #ffffff;
+  background: #f8fafc;
   padding: 0 14px;
   cursor: pointer;
 }
@@ -695,7 +684,7 @@ input[type="checkbox"] {
 }
 
 .compare-item {
-  border: 1px solid #0d7377;
+  border: 1px solid #d7deea;
   border-radius: 8px;
   padding: 8px;
   display: grid;
@@ -709,7 +698,7 @@ input[type="checkbox"] {
   height: 46px;
   border-radius: 6px;
   object-fit: contain;
-  background: #ffffff;
+  background: #f0f3f8;
 }
 
 .compare-item p {
@@ -721,13 +710,13 @@ input[type="checkbox"] {
 .compare-item button {
   border: 0;
   background: transparent;
-  color: #000000;
+  color: #6c7483;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
 .compare-actions {
-  border-top: 1px solid #0d7377;
+  border-top: 1px solid #e0e6ef;
   padding: 10px 14px;
   display: flex;
   justify-content: flex-end;
@@ -757,7 +746,7 @@ input[type="checkbox"] {
 .compare-error-modal {
   position: fixed;
   inset: 0;
-  background: rgba(13, 115, 119, 0.55);
+  background: rgba(15, 20, 30, 0.55);
   display: grid;
   place-items: center;
   z-index: 120;
@@ -771,7 +760,7 @@ input[type="checkbox"] {
 .compare-error-modal-card {
   width: min(560px, calc(100vw - 32px));
   background: #fff;
-  border: 1px solid #0d7377;
+  border: 1px solid #d2d9e3;
   border-radius: 6px;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
   padding: 22px 22px 24px;
@@ -780,7 +769,7 @@ input[type="checkbox"] {
 
 .compare-error-modal-card h2 {
   margin: 0 0 18px;
-  color: #000000;
+  color: #121826;
   font-size: 2rem;
   line-height: 1.15;
   max-width: 17ch;
@@ -788,7 +777,7 @@ input[type="checkbox"] {
 
 .compare-error-modal-card p {
   margin: 0 0 20px;
-  color: #000000;
+  color: #3c465a;
   font-size: 1.05rem;
 }
 
@@ -801,7 +790,7 @@ input[type="checkbox"] {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #000000;
+  color: #40495c;
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
@@ -813,7 +802,7 @@ input[type="checkbox"] {
   border: 0;
   border-radius: 6px;
   background: var(--bb-yellow);
-  color: #000000;
+  color: #1b1f26;
   font-size: 1.06rem;
   font-weight: 800;
   cursor: pointer;
@@ -821,12 +810,12 @@ input[type="checkbox"] {
 
 .filter-empty {
   min-height: 180px;
-  border: 1px dashed #0d7377;
+  border: 1px dashed #c4cedf;
   border-radius: 12px;
-  background: #ffffff;
+  background: #f8fafd;
   display: grid;
   place-items: center;
-  color: #000000;
+  color: #4f5866;
   text-align: center;
   padding: 20px;
 }

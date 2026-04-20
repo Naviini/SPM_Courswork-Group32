@@ -111,7 +111,7 @@ const products = [
     inStock: true,
     pickupReady: true,
     sponsored: true,
-    tag: "Best Selling",
+    tag: "Sponsored",
     offerCount: 0,
     moreBuyingFrom: null,
     image: "assets/assets2/Verizon%20Prepaid%20-%20Motorola%20moto%20g%205G%202025.jpeg",
@@ -268,7 +268,7 @@ const products = [
     inStock: true,
     pickupReady: true,
     sponsored: true,
-    tag: "Top Pick",
+    tag: "Sponsored",
     offerCount: 0,
     moreBuyingFrom: null,
     image: "assets/assets2/Visible%20-%20$25mo%20plan%20%20eSIM%20pSIM%20Kit.jpeg",
@@ -503,19 +503,6 @@ let compareIds = [];
 let selectedQuickPrice = "";
 
 const formatPrice = (value) => `$${value.toFixed(2)}`;
-
-const buildProductDetailsUrl = (product) => {
-  const params = new URLSearchParams();
-  params.set("name", product.name);
-  params.set("subtitle", product.subtitle || "Unlocked");
-  params.set("price", product.price.toFixed(2));
-  params.set("rating", product.rating.toFixed(1));
-  params.set("reviews", String(product.reviews));
-  params.set("brand", product.brand || "Nexium");
-  params.set("image", product.image);
-  params.set("tag", product.tag || "Featured deal");
-  return `product-details.html?${params.toString()}`;
-};
 
 const showCompareLimitModal = () => {
   if (!compareErrorModal) {
@@ -795,12 +782,13 @@ const renderProducts = () => {
       const compareChecked = compareIds.includes(product.id) ? "checked" : "";
 
       return `
-        <article class="product-card" data-detail-url="${buildProductDetailsUrl(product)}">
+        <article class="product-card">
           <span class="card-pill">${product.tag}</span>
           <button class="save-button" type="button" aria-label="Save ${product.name}">♡</button>
           <div class="product-art">
             <img src="${product.image}" alt="${product.name}">
           </div>
+          ${product.sponsored ? '<small class="product-sponsored">Sponsored</small>' : ""}
           <h3 class="product-title">${product.name}</h3>
           <p class="product-subtitle">${product.subtitle}</p>
           ${variantsMarkup}
@@ -850,53 +838,6 @@ const renderProducts = () => {
 
       updateCompareTray();
     });
-  });
-
-  productGrid.querySelectorAll(".product-card").forEach((card) => {
-    const detailUrl = card.dataset.detailUrl || "product-details.html";
-
-    card.classList.add("product-card-clickable");
-    card.tabIndex = 0;
-    card.setAttribute("role", "link");
-
-    const navigateToDetails = () => {
-      window.location.href = detailUrl;
-    };
-
-    card.addEventListener("click", (event) => {
-      const ignoredTarget = event.target.closest(".save-button, .compare-row, .compare-checkbox, label, input");
-      if (ignoredTarget) {
-        return;
-      }
-
-      event.preventDefault();
-      navigateToDetails();
-    });
-
-    card.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") {
-        return;
-      }
-
-      event.preventDefault();
-      navigateToDetails();
-    });
-
-    const ctaButton = card.querySelector(".card-cta");
-    if (ctaButton) {
-      ctaButton.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        navigateToDetails();
-      });
-    }
-
-    const saveButton = card.querySelector(".save-button");
-    if (saveButton) {
-      saveButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-      });
-    }
   });
 };
 
@@ -960,7 +901,7 @@ const renderNewRail = () => {
     .slice(8)
     .map(
       (product) => `
-        <article class="new-rail-card" data-detail-url="${buildProductDetailsUrl(product)}" tabindex="0" role="link">
+        <article class="new-rail-card">
           <img src="${product.image}" alt="${product.name}">
           <p>${product.name}</p>
           <strong>${formatPrice(product.price)}</strong>
@@ -968,27 +909,6 @@ const renderNewRail = () => {
       `
     )
     .join("");
-
-  newRail.querySelectorAll(".new-rail-card").forEach((card) => {
-    const detailUrl = card.dataset.detailUrl || "product-details.html";
-
-    const navigateToDetails = () => {
-      window.location.href = detailUrl;
-    };
-
-    card.addEventListener("click", () => {
-      navigateToDetails();
-    });
-
-    card.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") {
-        return;
-      }
-
-      event.preventDefault();
-      navigateToDetails();
-    });
-  });
 };
 
 const setupCategoryButtons = () => {
