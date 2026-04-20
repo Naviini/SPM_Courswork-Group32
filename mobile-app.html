@@ -342,6 +342,33 @@
               </div>
             </div>
 
+            <div class="text-style-grid text-style-grid-advanced" aria-label="Advanced text controls">
+              <div class="customization-field">
+                <label for="mobileTextSize">Text size</label>
+                <input id="mobileTextSize" class="text-size-input" type="range" min="22" max="54" step="1" value="32" data-customization-text-size>
+                <p class="field-help" data-customization-text-size-label>32 px</p>
+              </div>
+              <div class="customization-field">
+                <label for="mobileTextPlacement">Text placement</label>
+                <select id="mobileTextPlacement" data-customization-text-placement>
+                  <option value="auto" selected>Auto (recommended)</option>
+                  <option value="top">Top</option>
+                  <option value="center">Center</option>
+                  <option value="bottom">Bottom</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="customization-field">
+              <span class="field-label">Quick text presets</span>
+              <div class="text-preset-grid" role="group" aria-label="Mobile text presets">
+                <button type="button" class="text-preset-chip" data-customization-text-preset="Audio Mood">Audio Mood</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="Pocket Glow">Pocket Glow</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="My Playlist">My Playlist</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="Game Time">Game Time</button>
+              </div>
+            </div>
+
             <div class="customization-field">
               <span class="field-label">Stickers</span>
               <div class="sticker-grid" aria-label="Mobile sticker options">
@@ -359,6 +386,11 @@
                   <button type="button" class="sticker-action-button" data-sticker-action="rotate-right">Rotate Right</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="size-down">Size -</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="size-up">Size +</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-up">Move Up</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-down">Move Down</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-left">Move Left</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-right">Move Right</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="duplicate">Duplicate</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="undo">Undo Last</button>
                   <button type="button" class="sticker-action-button sticker-action-button-danger" data-sticker-action="remove">Remove Selected</button>
                 </div>
@@ -395,37 +427,21 @@
               <span>Real-time preview</span>
               <span>Stickers: <strong data-sticker-count>0</strong>/6</span>
             </div>
+            <div class="preview-insights" aria-live="polite">
+              <span data-customization-insight-text>Text: none</span>
+              <span data-customization-insight-font>Font: Manrope</span>
+              <span data-customization-insight-accent>Starburst Overlay</span>
+            </div>
+            <div class="preview-actions">
+              <button type="button" class="preview-action-button" data-customization-download>Download PNG</button>
+              <button type="button" class="preview-action-button" data-customization-copy-summary>Copy Design Summary</button>
+            </div>
             <p class="preview-note">Drag stickers to reposition, then fine-tune with rotate and size controls. Submitted designs sync to the shared cart for processing.</p>
           </div>
         </div>
       </article>
     </section>
   </main>
-
-  <footer class="home-footer" id="support">
-    <div class="shell footer-support-strip">
-      <article>
-        <div class="support-icon">?</div>
-        <a href="#">Visit our Support Center</a>
-      </article>
-      <article>
-        <div class="support-icon">□</div>
-        <a href="#">Check your Order Status</a>
-      </article>
-      <article>
-        <div class="support-icon">↔</div>
-        <a href="#">Shipping, Delivery &amp; Pickup</a>
-      </article>
-      <article>
-        <div class="support-icon">↺</div>
-        <a href="#">Returns &amp; Exchanges</a>
-      </article>
-      <article>
-        <div class="support-icon">$</div>
-        <a href="#">Price Match Guarantee</a>
-      </article>
-    </div>
-  </footer>
 
   <script src="script.js"></script>
 </body>

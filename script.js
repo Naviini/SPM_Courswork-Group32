@@ -16,6 +16,9 @@ const CUSTOMIZATION_PROMO_STORAGE_KEY = "nexiumCustomizationPromo";
 const MAX_STICKERS_PER_DESIGN = 6;
 const MIN_STICKER_SIZE = 24;
 const MAX_STICKER_SIZE = 56;
+const MIN_CUSTOM_TEXT_SIZE = 22;
+const MAX_CUSTOM_TEXT_SIZE = 54;
+const DEFAULT_CUSTOM_TEXT_SIZE = 32;
 const MAX_CUSTOM_ITEM_QUANTITY = 20;
 let lastMeasuredHeaderHeight = 0;
 
@@ -934,6 +937,13 @@ const accentLabels = {
   orbit: "Orbit Ring",
 };
 
+const textPlacementLabels = {
+  auto: "Auto",
+  top: "Top",
+  center: "Center",
+  bottom: "Bottom",
+};
+
 const textFontOptions = {
   "space-grotesk": {
     label: "Space Grotesk",
@@ -996,6 +1006,20 @@ const escapeHtml = (value) =>
 const normalizeHexColor = (value, fallback = "#ffffff") => {
   const normalizedValue = typeof value === "string" ? value.trim() : "";
   return /^#[0-9a-fA-F]{6}$/.test(normalizedValue) ? normalizedValue.toLowerCase() : fallback;
+};
+
+const clampCustomizationTextSize = (sizeValue) => {
+  const parsedSize = Number(sizeValue);
+  if (!Number.isFinite(parsedSize)) {
+    return DEFAULT_CUSTOM_TEXT_SIZE;
+  }
+
+  return Math.min(MAX_CUSTOM_TEXT_SIZE, Math.max(MIN_CUSTOM_TEXT_SIZE, Math.round(parsedSize)));
+};
+
+const normalizeTextPlacement = (placementValue) => {
+  const normalizedValue = typeof placementValue === "string" ? placementValue.trim().toLowerCase() : "auto";
+  return textPlacementLabels[normalizedValue] ? normalizedValue : "auto";
 };
 
 const getTextStrokeColor = (hexColor) => {
@@ -1352,6 +1376,40 @@ const drawDeviceDetailLines = (context, productType, width, height) => {
   context.restore();
 };
 
+const getCustomizationTextYPosition = (productType, textPlacement) => {
+  const normalizedPlacement = normalizeTextPlacement(textPlacement);
+
+  if (productType === "airpods-case") {
+    if (normalizedPlacement === "top") {
+      return 184;
+    }
+
+    if (normalizedPlacement === "center") {
+      return 228;
+    }
+
+    if (normalizedPlacement === "bottom") {
+      return 276;
+    }
+
+    return 270;
+  }
+
+  if (normalizedPlacement === "top") {
+    return 136;
+  }
+
+  if (normalizedPlacement === "center") {
+    return 234;
+  }
+
+  if (normalizedPlacement === "bottom") {
+    return 318;
+  }
+
+  return 318;
+};
+
 const renderCustomizationCanvas = (state) => {
   const { canvas, context } = state;
   const width = canvas.width;
@@ -1378,17 +1436,18 @@ const renderCustomizationCanvas = (state) => {
   if (state.customText) {
     const selectedFont = textFontOptions[state.textFont] || textFontOptions["space-grotesk"];
     const selectedColor = normalizeHexColor(state.textColor, "#ffffff");
+    const textSize = clampCustomizationTextSize(state.textSize);
+    const textY = getCustomizationTextYPosition(state.productType, state.textPlacement);
 
     context.fillStyle = selectedColor;
     context.strokeStyle = getTextStrokeColor(selectedColor);
-    context.lineWidth = 6;
-    context.font = `700 32px ${selectedFont.canvasStack}`;
+    context.lineWidth = Math.max(3.2, textSize * 0.18);
+    context.font = `700 ${textSize}px ${selectedFont.canvasStack}`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.shadowColor = "rgba(4, 10, 18, 0.38)";
-    context.shadowBlur = 8;
+    context.shadowBlur = Math.max(6, textSize * 0.24);
 
-    const textY = state.productType === "airpods-case" ? 270 : 318;
     context.strokeText(state.customText, width / 2, textY, width - 96);
     context.fillText(state.customText, width / 2, textY, width - 96);
     context.shadowBlur = 0;
@@ -1543,6 +1602,10 @@ const renderCustomizationOrdersInCart = (options = {}) => {
       const textFontKey = textFontOptions[order.textFont] ? order.textFont : "space-grotesk";
       const safeTextFont = escapeHtml(textFontOptions[textFontKey].label);
       const safeTextColor = escapeHtml(normalizeHexColor(order.textColor, "#ffffff"));
+      const safeTextSize = clampCustomizationTextSize(order.textSize);
+      const safeTextPlacement = escapeHtml(
+        textPlacementLabels[normalizeTextPlacement(order.textPlacement)] || textPlacementLabels.auto
+      );
       const quantity = clampCustomizationQuantity(order.quantity);
       const unitPriceAmount = Number(order.price) || 0;
       const unitPriceText = formatUsdCurrency(unitPriceAmount);
@@ -1566,7 +1629,7 @@ const renderCustomizationOrdersInCart = (options = {}) => {
             <strong>${safeProduct}</strong>
             <small>${safeTemplate} • ${safeAccent}</small>
             <p>Text: ${safeText}</p>
-            <small>Text style: ${safeTextFont} • ${safeTextColor}</small>
+            <small>Text style: ${safeTextFont} • ${safeTextColor} • ${safeTextSize}px • ${safeTextPlacement}</small>
             <small>Submitted ${submittedAt}</small>
             <div class="cart-custom-qty">
               <span>Qty</span>
@@ -1610,6 +1673,9 @@ const initializeCustomizationStudios = () => {
     const textInput = studio.querySelector("[data-customization-text]");
     const textColorInput = studio.querySelector("[data-customization-text-color]");
     const textFontSelect = studio.querySelector("[data-customization-text-font]");
+    const textSizeInput = studio.querySelector("[data-customization-text-size]");
+    const textSizeLabel = studio.querySelector("[data-customization-text-size-label]");
+    const textPlacementSelect = studio.querySelector("[data-customization-text-placement]");
     const accentSelect = studio.querySelector("[data-customization-accent]");
     const resetButton = studio.querySelector("[data-customization-reset]");
     const submitButton = studio.querySelector("[data-customization-submit]");
@@ -1617,11 +1683,17 @@ const initializeCustomizationStudios = () => {
     const templateButtons = studio.querySelectorAll("[data-template-key]");
     const stickerButtons = studio.querySelectorAll("[data-sticker]");
     const stickerActionButtons = studio.querySelectorAll("[data-sticker-action]");
+    const textPresetButtons = studio.querySelectorAll("[data-customization-text-preset]");
     const selectedStickerCopy = studio.querySelector("[data-selected-sticker-copy]");
     const randomizeButton = studio.querySelector("[data-customization-randomize]");
+    const previewDownloadButton = studio.querySelector("[data-customization-download]");
+    const previewCopySummaryButton = studio.querySelector("[data-customization-copy-summary]");
     const productLabel = studio.querySelector("[data-preview-product-label]");
     const templateLabel = studio.querySelector("[data-preview-template-label]");
     const stickerCount = studio.querySelector("[data-sticker-count]");
+    const textInsight = studio.querySelector("[data-customization-insight-text]");
+    const fontInsight = studio.querySelector("[data-customization-insight-font]");
+    const accentInsight = studio.querySelector("[data-customization-insight-accent]");
 
     const initialTemplateKey =
       studio.querySelector(".template-button.is-active")?.getAttribute("data-template-key") || "neon-wave";
@@ -1634,6 +1706,9 @@ const initializeCustomizationStudios = () => {
       customText: textInput instanceof HTMLInputElement ? textInput.value.trim() : "",
       textColor: textColorInput instanceof HTMLInputElement ? normalizeHexColor(textColorInput.value) : "#ffffff",
       textFont: textFontSelect instanceof HTMLSelectElement ? textFontSelect.value : "space-grotesk",
+      textSize: textSizeInput instanceof HTMLInputElement ? clampCustomizationTextSize(textSizeInput.value) : DEFAULT_CUSTOM_TEXT_SIZE,
+      textPlacement:
+        textPlacementSelect instanceof HTMLSelectElement ? normalizeTextPlacement(textPlacementSelect.value) : "auto",
       accent: accentSelect instanceof HTMLSelectElement ? accentSelect.value : "none",
       stickers: [],
       selectedStickerIndex: -1,
@@ -1641,7 +1716,11 @@ const initializeCustomizationStudios = () => {
 
     const defaultTextColor = state.textColor;
     const defaultTextFont = textFontOptions[state.textFont] ? state.textFont : "space-grotesk";
+    const defaultTextSize = clampCustomizationTextSize(state.textSize);
+    const defaultTextPlacement = normalizeTextPlacement(state.textPlacement);
     state.textFont = defaultTextFont;
+    state.textSize = defaultTextSize;
+    state.textPlacement = defaultTextPlacement;
 
     const dragState = {
       stickerIndex: -1,
@@ -1652,6 +1731,7 @@ const initializeCustomizationStudios = () => {
 
     canvas.style.touchAction = "none";
     canvas.style.cursor = "grab";
+    canvas.tabIndex = 0;
 
     const setStatus = (message, tone = "info") => {
       if (!(statusText instanceof HTMLElement)) {
@@ -1676,16 +1756,24 @@ const initializeCustomizationStudios = () => {
     const syncStickerEditorUi = () => {
       const hasSelectedSticker =
         state.selectedStickerIndex >= 0 && state.selectedStickerIndex < state.stickers.length;
+      const selectedSticker = hasSelectedSticker ? state.stickers[state.selectedStickerIndex] : null;
 
       if (selectedStickerCopy instanceof HTMLElement) {
         selectedStickerCopy.textContent = hasSelectedSticker
-          ? `Selected sticker #${state.selectedStickerIndex + 1}`
+          ? `Selected sticker #${state.selectedStickerIndex + 1} ${selectedSticker?.value || ""}`.trim()
           : "No sticker selected";
       }
 
       stickerActionButtons.forEach((button) => {
         const action = button.getAttribute("data-sticker-action");
-        const shouldDisable = action === "undo" ? state.stickers.length === 0 : !hasSelectedSticker;
+        let shouldDisable = !hasSelectedSticker;
+
+        if (action === "undo") {
+          shouldDisable = state.stickers.length === 0;
+        } else if (action === "duplicate") {
+          shouldDisable = !hasSelectedSticker || state.stickers.length >= MAX_STICKERS_PER_DESIGN;
+        }
+
         button.disabled = shouldDisable;
       });
     };
@@ -1693,10 +1781,16 @@ const initializeCustomizationStudios = () => {
     const syncStudio = () => {
       const currentProduct = customizationProducts[state.productType] || customizationProducts["mobile-back-cover"];
       const currentTemplate = customizationTemplates[state.templateKey] || customizationTemplates["neon-wave"];
+      const currentFont = textFontOptions[state.textFont] || textFontOptions["space-grotesk"];
+      const currentAccentLabel = accentLabels[state.accent] || accentLabels.none;
+      const currentPlacement = normalizeTextPlacement(state.textPlacement);
 
       if (!textFontOptions[state.textFont]) {
         state.textFont = "space-grotesk";
       }
+
+      state.textSize = clampCustomizationTextSize(state.textSize);
+      state.textPlacement = currentPlacement;
 
       normalizeSelectedSticker();
 
@@ -1722,13 +1816,113 @@ const initializeCustomizationStudios = () => {
         textFontSelect.value = state.textFont;
       }
 
+      if (textSizeInput instanceof HTMLInputElement) {
+        textSizeInput.value = String(state.textSize);
+      }
+
+      if (textSizeLabel instanceof HTMLElement) {
+        textSizeLabel.textContent = `${state.textSize} px`;
+      }
+
+      if (textPlacementSelect instanceof HTMLSelectElement) {
+        textPlacementSelect.value = state.textPlacement;
+      }
+
       if (stickerCount) {
         stickerCount.textContent = String(state.stickers.length);
+      }
+
+      if (textInsight instanceof HTMLElement) {
+        textInsight.textContent = state.customText
+          ? `Text: ${state.customText.length}/28 chars`
+          : "Text: none";
+      }
+
+      if (fontInsight instanceof HTMLElement) {
+        fontInsight.textContent = `Font: ${currentFont.label} • ${state.textSize}px`;
+      }
+
+      if (accentInsight instanceof HTMLElement) {
+        accentInsight.textContent = `${currentAccentLabel} • ${textPlacementLabels[state.textPlacement] || textPlacementLabels.auto}`;
       }
 
       syncStickerEditorUi();
 
       renderCustomizationCanvas(state);
+    };
+
+    const buildDesignSummary = () => {
+      const product = customizationProducts[state.productType] || customizationProducts["mobile-back-cover"];
+      const template = customizationTemplates[state.templateKey] || customizationTemplates["neon-wave"];
+      const fontLabel = textFontOptions[state.textFont]?.label || textFontOptions["space-grotesk"].label;
+      const accentLabel = accentLabels[state.accent] || accentLabels.none;
+      const textValue = state.customText || "No custom text";
+
+      return [
+        "Nexium Design Summary",
+        `Product: ${product.label}`,
+        `Template: ${template.label}`,
+        `Text: ${textValue}`,
+        `Text style: ${fontLabel}, ${state.textSize}px, ${textPlacementLabels[state.textPlacement] || textPlacementLabels.auto}, ${normalizeHexColor(state.textColor, "#ffffff")}`,
+        `Accent: ${accentLabel}`,
+        `Stickers: ${state.stickers.length}`,
+      ].join("\n");
+    };
+
+    const downloadStudioPreview = () => {
+      syncStudio();
+
+      try {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = canvas.toDataURL("image/png");
+        downloadLink.download = `nexium-${state.productType}-${timestamp}.png`;
+        document.body.append(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        setStatus("Preview downloaded as PNG.", "success");
+      } catch {
+        setStatus("Could not download preview in this browser context.", "warning");
+      }
+    };
+
+    const copySummaryWithFallback = async () => {
+      const summary = buildDesignSummary();
+
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        try {
+          await navigator.clipboard.writeText(summary);
+          setStatus("Design summary copied to clipboard.", "success");
+          return;
+        } catch {
+          // Continue to fallback copy if clipboard API is blocked.
+        }
+      }
+
+      const fallbackCopyField = document.createElement("textarea");
+      fallbackCopyField.value = summary;
+      fallbackCopyField.setAttribute("readonly", "");
+      fallbackCopyField.style.position = "fixed";
+      fallbackCopyField.style.top = "-9999px";
+      fallbackCopyField.style.left = "-9999px";
+
+      document.body.append(fallbackCopyField);
+      fallbackCopyField.select();
+
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch {
+        copied = false;
+      }
+
+      fallbackCopyField.remove();
+
+      if (copied) {
+        setStatus("Design summary copied to clipboard.", "success");
+      } else {
+        setStatus("Copy failed in this browser context.", "warning");
+      }
     };
 
     const addSticker = (stickerValue) => {
@@ -1750,6 +1944,10 @@ const initializeCustomizationStudios = () => {
 
       state.selectedStickerIndex = state.stickers.length - 1;
 
+      if (typeof canvas.focus === "function") {
+        canvas.focus();
+      }
+
       setStatus("Sticker added. Keep customizing or submit your design.");
       syncStudio();
     };
@@ -1761,6 +1959,8 @@ const initializeCustomizationStudios = () => {
       state.customText = "";
       state.textColor = defaultTextColor;
       state.textFont = defaultTextFont;
+      state.textSize = defaultTextSize;
+      state.textPlacement = defaultTextPlacement;
 
       if (textInput instanceof HTMLInputElement) {
         textInput.value = "";
@@ -1772,6 +1972,14 @@ const initializeCustomizationStudios = () => {
 
       if (textFontSelect instanceof HTMLSelectElement) {
         textFontSelect.value = defaultTextFont;
+      }
+
+      if (textSizeInput instanceof HTMLInputElement) {
+        textSizeInput.value = String(defaultTextSize);
+      }
+
+      if (textPlacementSelect instanceof HTMLSelectElement) {
+        textPlacementSelect.value = defaultTextPlacement;
       }
 
       setStatus("Design reset. Start a fresh concept.");
@@ -1798,6 +2006,8 @@ const initializeCustomizationStudios = () => {
         customText: rawText,
         textColor: normalizeHexColor(state.textColor, "#ffffff"),
         textFont: state.textFont,
+        textSize: clampCustomizationTextSize(state.textSize),
+        textPlacement: normalizeTextPlacement(state.textPlacement),
         stickerCount: state.stickers.length,
         accent: state.accent,
         price: product.price,
@@ -1819,6 +2029,7 @@ const initializeCustomizationStudios = () => {
       const templateOptions = Object.keys(customizationTemplates);
       const accentOptions = Object.keys(accentLabels);
       const fontOptions = Object.keys(textFontOptions);
+      const textPlacements = Object.keys(textPlacementLabels);
       const textColors = ["#ffffff", "#ffe16b", "#c6f6ff", "#f8c2ff", "#212935"];
       const textLibrary = [
         "Tech in style",
@@ -1840,6 +2051,22 @@ const initializeCustomizationStudios = () => {
         state.textFont = fontOptions[Math.floor(Math.random() * fontOptions.length)];
         if (textFontSelect instanceof HTMLSelectElement) {
           textFontSelect.value = state.textFont;
+        }
+      }
+
+      state.textSize = clampCustomizationTextSize(
+        MIN_CUSTOM_TEXT_SIZE + Math.floor(Math.random() * (MAX_CUSTOM_TEXT_SIZE - MIN_CUSTOM_TEXT_SIZE + 1))
+      );
+      if (textSizeInput instanceof HTMLInputElement) {
+        textSizeInput.value = String(state.textSize);
+      }
+
+      if (textPlacements.length) {
+        state.textPlacement = normalizeTextPlacement(
+          textPlacements[Math.floor(Math.random() * textPlacements.length)]
+        );
+        if (textPlacementSelect instanceof HTMLSelectElement) {
+          textPlacementSelect.value = state.textPlacement;
         }
       }
 
@@ -1912,6 +2139,11 @@ const initializeCustomizationStudios = () => {
       }
 
       const sticker = state.stickers[state.selectedStickerIndex];
+      const nudgeSticker = (deltaX, deltaY) => {
+        const limits = getStickerBounds(state.productType, sticker.size);
+        sticker.x = Math.min(limits.maxX, Math.max(limits.minX, sticker.x + deltaX));
+        sticker.y = Math.min(limits.maxY, Math.max(limits.minY, sticker.y + deltaY));
+      };
 
       if (action === "rotate-left") {
         sticker.rotation -= Math.PI / 10;
@@ -1925,6 +2157,35 @@ const initializeCustomizationStudios = () => {
       } else if (action === "size-up") {
         sticker.size = Math.min(MAX_STICKER_SIZE, sticker.size + 4);
         setStatus("Sticker size increased.");
+      } else if (action === "move-up") {
+        nudgeSticker(0, -8);
+        setStatus("Sticker moved up.");
+      } else if (action === "move-down") {
+        nudgeSticker(0, 8);
+        setStatus("Sticker moved down.");
+      } else if (action === "move-left") {
+        nudgeSticker(-8, 0);
+        setStatus("Sticker moved left.");
+      } else if (action === "move-right") {
+        nudgeSticker(8, 0);
+        setStatus("Sticker moved right.");
+      } else if (action === "duplicate") {
+        if (state.stickers.length >= MAX_STICKERS_PER_DESIGN) {
+          setStatus("Maximum of 6 stickers reached. Remove one before duplicating.", "warning");
+          return;
+        }
+
+        const limits = getStickerBounds(state.productType, sticker.size);
+        const duplicateSticker = {
+          ...sticker,
+          x: Math.min(limits.maxX, Math.max(limits.minX, sticker.x + 12)),
+          y: Math.min(limits.maxY, Math.max(limits.minY, sticker.y + 12)),
+          rotation: sticker.rotation + 0.08,
+        };
+
+        state.stickers.push(duplicateSticker);
+        state.selectedStickerIndex = state.stickers.length - 1;
+        setStatus("Sticker duplicated.");
       } else if (action === "remove") {
         state.stickers.splice(state.selectedStickerIndex, 1);
         state.selectedStickerIndex = Math.min(state.selectedStickerIndex, state.stickers.length - 1);
@@ -1961,6 +2222,22 @@ const initializeCustomizationStudios = () => {
         minY: 20 + size * 0.5,
         maxY: canvas.height - 20 - size * 0.5,
       };
+    };
+
+    const nudgeSelectedSticker = (deltaX, deltaY) => {
+      normalizeSelectedSticker();
+
+      if (state.selectedStickerIndex < 0 || state.selectedStickerIndex >= state.stickers.length) {
+        return false;
+      }
+
+      const sticker = state.stickers[state.selectedStickerIndex];
+      const limits = getStickerBounds(state.productType, sticker.size);
+
+      sticker.x = Math.min(limits.maxX, Math.max(limits.minX, sticker.x + deltaX));
+      sticker.y = Math.min(limits.maxY, Math.max(limits.minY, sticker.y + deltaY));
+
+      return true;
     };
 
     const getStickerHitIndex = (x, y) => {
@@ -2017,6 +2294,10 @@ const initializeCustomizationStudios = () => {
         canvas.setPointerCapture(event.pointerId);
       }
 
+      if (typeof canvas.focus === "function") {
+        canvas.focus();
+      }
+
       canvas.style.cursor = "grabbing";
       setStatus("Dragging sticker. Release to place it.");
       syncStudio();
@@ -2061,11 +2342,47 @@ const initializeCustomizationStudios = () => {
       event.preventDefault();
     };
 
+    const onCanvasKeyDown = (event) => {
+      const moveStep = event.shiftKey ? 14 : 7;
+      let handled = false;
+
+      if (event.key === "ArrowUp") {
+        handled = nudgeSelectedSticker(0, -moveStep);
+      } else if (event.key === "ArrowDown") {
+        handled = nudgeSelectedSticker(0, moveStep);
+      } else if (event.key === "ArrowLeft") {
+        handled = nudgeSelectedSticker(-moveStep, 0);
+      } else if (event.key === "ArrowRight") {
+        handled = nudgeSelectedSticker(moveStep, 0);
+      } else if (event.key === "Delete" || event.key === "Backspace") {
+        normalizeSelectedSticker();
+        if (state.selectedStickerIndex >= 0 && state.selectedStickerIndex < state.stickers.length) {
+          state.stickers.splice(state.selectedStickerIndex, 1);
+          state.selectedStickerIndex = Math.min(state.selectedStickerIndex, state.stickers.length - 1);
+          handled = true;
+          setStatus("Selected sticker removed.");
+        }
+      }
+
+      if (!handled) {
+        return;
+      }
+
+      syncStudio();
+
+      if (event.key.startsWith("Arrow")) {
+        setStatus("Sticker moved with keyboard controls.");
+      }
+
+      event.preventDefault();
+    };
+
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerup", onPointerUp);
     canvas.addEventListener("pointercancel", endDrag);
     canvas.addEventListener("lostpointercapture", endDrag);
+    canvas.addEventListener("keydown", onCanvasKeyDown);
 
     if (productSelect instanceof HTMLSelectElement) {
       productSelect.addEventListener("change", () => {
@@ -2099,12 +2416,45 @@ const initializeCustomizationStudios = () => {
       });
     }
 
+    if (textSizeInput instanceof HTMLInputElement) {
+      textSizeInput.addEventListener("input", () => {
+        state.textSize = clampCustomizationTextSize(textSizeInput.value);
+        syncStudio();
+      });
+    }
+
+    if (textPlacementSelect instanceof HTMLSelectElement) {
+      textPlacementSelect.addEventListener("change", () => {
+        state.textPlacement = normalizeTextPlacement(textPlacementSelect.value);
+        syncStudio();
+      });
+    }
+
     if (accentSelect instanceof HTMLSelectElement) {
       accentSelect.addEventListener("change", () => {
         state.accent = accentSelect.value;
         syncStudio();
       });
     }
+
+    textPresetButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const presetText = button.getAttribute("data-customization-text-preset");
+        if (!presetText) {
+          return;
+        }
+
+        const normalizedPreset = presetText.trim().slice(0, 28);
+        state.customText = normalizedPreset;
+
+        if (textInput instanceof HTMLInputElement) {
+          textInput.value = normalizedPreset;
+        }
+
+        syncStudio();
+        setStatus("Preset text applied. You can edit it before submitting.");
+      });
+    });
 
     templateButtons.forEach((button) => {
       button.addEventListener("click", () => {
@@ -2151,6 +2501,16 @@ const initializeCustomizationStudios = () => {
 
     if (submitButton) {
       submitButton.addEventListener("click", submitStudio);
+    }
+
+    if (previewDownloadButton) {
+      previewDownloadButton.addEventListener("click", downloadStudioPreview);
+    }
+
+    if (previewCopySummaryButton) {
+      previewCopySummaryButton.addEventListener("click", () => {
+        copySummaryWithFallback();
+      });
     }
 
     syncStudio();

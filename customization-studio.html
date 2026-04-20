@@ -93,9 +93,7 @@
       <div class="section-title-row">
         <div>
           <h2>Customization Studio</h2>
-          <p>Create your own mobile back cover or AirPods case using templates, text, and stickers.</p>
         </div>
-        <a href="mobile-app.html#mobile-customization">Try it in mobile app view</a>
       </div>
 
       <article class="customization-studio" data-customization-studio="web">
@@ -140,6 +138,33 @@
               </div>
             </div>
 
+            <div class="text-style-grid text-style-grid-advanced" aria-label="Advanced text controls">
+              <div class="customization-field">
+                <label for="webTextSize">Text size</label>
+                <input id="webTextSize" class="text-size-input" type="range" min="22" max="54" step="1" value="32" data-customization-text-size>
+                <p class="field-help" data-customization-text-size-label>32 px</p>
+              </div>
+              <div class="customization-field">
+                <label for="webTextPlacement">Text placement</label>
+                <select id="webTextPlacement" data-customization-text-placement>
+                  <option value="auto" selected>Auto (recommended)</option>
+                  <option value="top">Top</option>
+                  <option value="center">Center</option>
+                  <option value="bottom">Bottom</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="customization-field">
+              <span class="field-label">Quick text presets</span>
+              <div class="text-preset-grid" role="group" aria-label="Text presets">
+                <button type="button" class="text-preset-chip" data-customization-text-preset="NEXIUM CORE">NEXIUM CORE</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="Signal Mode">Signal Mode</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="Future Sound">Future Sound</button>
+                <button type="button" class="text-preset-chip" data-customization-text-preset="My Signature">My Signature</button>
+              </div>
+            </div>
+
             <div class="customization-field">
               <span class="field-label">Add stickers</span>
               <div class="sticker-grid" aria-label="Sticker options">
@@ -157,6 +182,11 @@
                   <button type="button" class="sticker-action-button" data-sticker-action="rotate-right">Rotate Right</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="size-down">Size -</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="size-up">Size +</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-up">Move Up</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-down">Move Down</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-left">Move Left</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="move-right">Move Right</button>
+                  <button type="button" class="sticker-action-button" data-sticker-action="duplicate">Duplicate</button>
                   <button type="button" class="sticker-action-button" data-sticker-action="undo">Undo Last</button>
                   <button type="button" class="sticker-action-button sticker-action-button-danger" data-sticker-action="remove">Remove Selected</button>
                 </div>
@@ -192,6 +222,15 @@
             <div class="preview-meta-row">
               <span>Live preview</span>
               <span>Stickers: <strong data-sticker-count>0</strong>/6</span>
+            </div>
+            <div class="preview-insights" aria-live="polite">
+              <span data-customization-insight-text>Text: none</span>
+              <span data-customization-insight-font>Font: Space Grotesk</span>
+              <span data-customization-insight-accent>No visual effect</span>
+            </div>
+            <div class="preview-actions">
+              <button type="button" class="preview-action-button" data-customization-download>Download PNG</button>
+              <button type="button" class="preview-action-button" data-customization-copy-summary>Copy Design Summary</button>
             </div>
             <p class="preview-note">Drag stickers to reposition. Tap a sticker to select and edit it. When submitted, the design is saved and sent to order processing.</p>
           </div>
