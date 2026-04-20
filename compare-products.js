@@ -16,6 +16,7 @@
   const comparePageEmptyState = document.getElementById("comparePageEmptyState");
   const compareHeader = document.querySelector(".home-header") || document.querySelector(".compare-header");
   const compactBreakpoint = window.matchMedia("(min-width: 981px)");
+  const shopState = window.NexiumShopState || null;
 
   const BASE_SPEC_ROWS = [
     "Screen Size",
@@ -255,6 +256,22 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
 
+  const showAddedFeedback = (button) => {
+    if (!button || button.dataset.feedbackState === "locked") {
+      return;
+    }
+
+    const originalText = button.dataset.originalText || button.textContent;
+    button.dataset.originalText = originalText;
+    button.dataset.feedbackState = "locked";
+    button.textContent = "Added";
+
+    window.setTimeout(() => {
+      button.textContent = button.dataset.originalText || originalText;
+      button.dataset.feedbackState = "";
+    }, 1100);
+  };
+
   const formatPrice = (value) => `$${Number(value || 0).toFixed(2)}`;
 
   const buildStars = (rating) => {
@@ -450,7 +467,7 @@
             <p class="rating-line">${buildStars(item.product.rating)}<span>(${Number(item.product.reviews || 0).toLocaleString()})</span></p>
             <p class="deal-line">Ultimate Deal</p>
             <p class="price-line">${formatPrice(item.product.price)}</p>
-            <button type="button" class="details-button">See Details</button>
+            <button type="button" class="details-button" data-add-cart-id="${escapeHtml(item.product.id)}">Add to cart</button>
             <button type="button" class="favorite-button" aria-label="Save ${escapeHtml(item.product.name)}">♡</button>
             <p class="color-line"><strong>Color:</strong> ${escapeHtml(item.details.color)}</p>
             <div class="color-swatches">${swatchesMarkup}</div>
@@ -469,6 +486,35 @@
         compareProducts = compareProducts.filter((product) => product.id !== removeId);
         saveCompareState();
         renderPage();
+      });
+    });
+
+    compareProductsGrid.querySelectorAll("[data-add-cart-id]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const productId = button.getAttribute("data-add-cart-id");
+        if (!productId || !shopState?.addItemToCart) {
+          return;
+        }
+
+        const product = hydratedProducts.find((item) => item.product.id === productId)?.product;
+        if (!product) {
+          return;
+        }
+
+        shopState.addItemToCart(
+          {
+            id: product.id,
+            name: product.name,
+            subtitle: product.subtitle,
+            price: product.price,
+            image: product.image,
+            brand: product.brand,
+            tag: "Compared product",
+          },
+          1
+        );
+
+        showAddedFeedback(button);
       });
     });
   };

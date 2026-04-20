@@ -75,14 +75,14 @@
           <a href="index.html#featured-products">Featured Products</a>
           <a href="index.html#advice">Discover</a>
           <a href="index.html#preowned">Certified Pre-Owned</a>
-          <a href="index.html#accessories">Accessories</a>
           <a href="customization-studio.html#customization-studio">Customization Studio</a>
           <a href="index.html#catalog">Explore Items</a>
+          <a href="index.html#advice">Gift Ideas</a>
         </nav>
         <nav class="secondary-links secondary-links-right">
           <a href="index.html#rewards">Rewards</a>
           <a href="index.html#support">Order Status</a>
-          <a href="index.html#saved">Saved Items</a>
+          <a href="saved-items.html">Saved Items</a>
         </nav>
       </div>
     </div>
@@ -92,18 +92,31 @@
     <section class="shell cart-section" id="cart-section">
       <div class="cart-layout">
         <div class="cart-main-col">
-          <h2>Your cart is empty</h2>
-          <p>Have an account? <a href="#">Sign in to see your cart</a></p>
+          <h2 data-cart-empty-heading>Your cart is empty</h2>
+          <p data-cart-empty-copy>Have an account? <a href="#">Sign in to see your cart</a></p>
+
+          <article class="cart-items-box">
+            <div class="cart-saved-head">
+              <h3>Cart Items <small data-cart-items-count>(0)</small></h3>
+              <span aria-hidden="true">⌃</span>
+            </div>
+            <div class="cart-items-empty" data-cart-items-empty>
+              <h4>Your cart is currently empty</h4>
+              <p>Browse phones and tap <strong>Add to cart</strong> to start checkout.</p>
+            </div>
+            <div class="cart-items-list" data-cart-items-list></div>
+          </article>
 
           <article class="cart-saved-box">
             <div class="cart-saved-head">
-              <h3>♡ Saved Items</h3>
+              <h3>Saved Items <small data-saved-items-count>(0)</small></h3>
               <span aria-hidden="true">⌃</span>
             </div>
-            <div class="cart-saved-empty">
+            <div class="cart-saved-empty" data-saved-items-empty>
               <h4>Your list is currently empty</h4>
               <p>Need inspiration? Check out <a href="#">recommended items</a>, or search for items to save.</p>
             </div>
+            <div class="cart-saved-list" data-saved-items-list></div>
           </article>
 
           <article class="cart-custom-box">
@@ -160,6 +173,10 @@
 
         <aside class="cart-summary-col">
           <h3>Order Summary</h3>
+          <div class="cart-summary-row cart-summary-row-products">
+            <span>Products Subtotal</span>
+            <strong data-products-subtotal>$0.00</strong>
+          </div>
           <div class="cart-summary-row cart-summary-row-subtotal">
             <span>Customization Subtotal</span>
             <strong data-customization-subtotal>$0.00</strong>

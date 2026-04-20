@@ -501,8 +501,62 @@ let activeCategory = "all";
 let activeChip = "all";
 let compareIds = [];
 let selectedQuickPrice = "";
+const shopState = window.NexiumShopState || null;
 
 const formatPrice = (value) => `$${value.toFixed(2)}`;
+
+const buildStoredProductFromCatalogProduct = (product) => ({
+  id: product.id,
+  name: product.name,
+  subtitle: product.subtitle,
+  price: product.price,
+  image: product.image,
+  brand: product.brand || "Nexium",
+  tag: product.tag || "Featured deal",
+});
+
+const setSaveButtonState = (button, isSaved) => {
+  if (!button) {
+    return;
+  }
+
+  button.classList.toggle("is-saved", isSaved);
+  button.setAttribute("aria-pressed", String(isSaved));
+  button.textContent = isSaved ? "♥" : "♡";
+};
+
+const showAddedFeedback = (button) => {
+  if (!button || button.dataset.feedbackState === "locked") {
+    return;
+  }
+
+  const originalText = button.dataset.originalText || button.textContent;
+  button.dataset.originalText = originalText;
+  button.dataset.feedbackState = "locked";
+  button.textContent = "Added";
+
+  window.setTimeout(() => {
+    button.textContent = button.dataset.originalText || originalText;
+    button.dataset.feedbackState = "";
+  }, 1100);
+};
+
+const syncRenderedSaveButtons = () => {
+  if (!productGrid || !shopState?.isSavedItem) {
+    return;
+  }
+
+  productGrid.querySelectorAll(".product-card").forEach((card) => {
+    const saveButton = card.querySelector(".save-button");
+    const productId = card.getAttribute("data-product-id") || "";
+
+    if (!saveButton || !productId) {
+      return;
+    }
+
+    setSaveButtonState(saveButton, shopState.isSavedItem(productId));
+  });
+};
 
 const buildProductDetailsUrl = (product) => {
   const params = new URLSearchParams();
@@ -793,11 +847,12 @@ const renderProducts = () => {
         : "";
 
       const compareChecked = compareIds.includes(product.id) ? "checked" : "";
+      const isSaved = shopState?.isSavedItem ? shopState.isSavedItem(product.id) : false;
 
       return `
-        <article class="product-card" data-detail-url="${buildProductDetailsUrl(product)}">
+        <article class="product-card" data-product-id="${product.id}" data-detail-url="${buildProductDetailsUrl(product)}">
           <span class="card-pill">${product.tag}</span>
-          <button class="save-button" type="button" aria-label="Save ${product.name}">♡</button>
+          <button class="save-button${isSaved ? " is-saved" : ""}" type="button" aria-label="Save ${product.name}" aria-pressed="${isSaved ? "true" : "false"}">${isSaved ? "♥" : "♡"}</button>
           <div class="product-art">
             <img src="${product.image}" alt="${product.name}">
           </div>
@@ -814,9 +869,7 @@ const renderProducts = () => {
           <p class="product-delivery">${product.pickupReady ? "Pick up in 1 hour" : "Pick up Mon, Apr 27"}</p>
           <p class="product-delivery">${product.inStock ? "Shipping unavailable" : "Out of stock"}</p>
           <div class="product-bottom">
-            <button type="button" class="card-cta ${product.cta === "add" ? "primary" : "secondary"}">
-              ${product.cta === "add" ? "Add to cart" : "See Details"}
-            </button>
+            <button type="button" class="card-cta primary">Add to cart</button>
             <label class="compare-row">
               <input type="checkbox" class="compare-checkbox" data-product-id="${product.id}" ${compareChecked}>
               Compare
@@ -854,6 +907,8 @@ const renderProducts = () => {
 
   productGrid.querySelectorAll(".product-card").forEach((card) => {
     const detailUrl = card.dataset.detailUrl || "product-details.html";
+    const productId = card.getAttribute("data-product-id") || "";
+    const cardProduct = products.find((product) => product.id === productId) || null;
 
     card.classList.add("product-card-clickable");
     card.tabIndex = 0;
@@ -887,14 +942,33 @@ const renderProducts = () => {
       ctaButton.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
+
+        if (cardProduct && shopState?.addItemToCart) {
+          shopState.addItemToCart(buildStoredProductFromCatalogProduct(cardProduct), 1);
+          showAddedFeedback(ctaButton);
+          return;
+        }
+
         navigateToDetails();
       });
     }
 
     const saveButton = card.querySelector(".save-button");
     if (saveButton) {
+      if (cardProduct && shopState?.isSavedItem) {
+        setSaveButtonState(saveButton, shopState.isSavedItem(cardProduct.id));
+      }
+
       saveButton.addEventListener("click", (event) => {
+        event.preventDefault();
         event.stopPropagation();
+
+        if (!cardProduct || !shopState?.toggleSavedItem) {
+          return;
+        }
+
+        const result = shopState.toggleSavedItem(buildStoredProductFromCatalogProduct(cardProduct));
+        setSaveButtonState(saveButton, result.isSaved);
       });
     }
   });
@@ -1139,4 +1213,10 @@ setupFilterListeners();
 setupCompareBarActions();
 renderProducts();
 updateCompareTray();
+
+if (shopState?.eventName) {
+  window.addEventListener(shopState.eventName, () => {
+    syncRenderedSaveButtons();
+  });
+}
 })();

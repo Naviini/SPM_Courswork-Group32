@@ -406,6 +406,12 @@ body.product-detail-page {
   color: #173034;
 }
 
+.detail-save-button.is-saved {
+  border-color: #0d7377;
+  background: #0d7377;
+  color: #ffffff;
+}
+
 .detail-policy-link {
   color: #0d7377;
   font-weight: 700;
@@ -582,11 +588,16 @@ body.product-detail-page {
   font-size: 1.35rem;
 }
 
-.aside-related-card a {
-  margin-top: 6px;
-  display: inline-block;
-  color: #0d7377;
-  font-weight: 700;
+.aside-related-card button {
+  margin-top: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 0;
+  background: #0d7377;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .detail-sticky-summary {
