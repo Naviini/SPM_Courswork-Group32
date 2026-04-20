@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexium Checkout | Secure Payment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-page checkout-page">
+  <header class="home-header">
+    <div class="home-utility">
+      <div class="shell utility-inner">
+        <div class="utility-links">
+          <a href="#">Nexium Outlet</a>
+          <a href="#">Business Store</a>
+          <a href="#">Campus Deals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-primary">
+      <div class="shell primary-inner">
+        <a href="index.html" class="home-logo">
+          <span class="brand-mark">N</span>
+          <span class="logo-copy">
+            <strong>Nexium</strong>
+            <small>Premium tech</small>
+          </span>
+        </a>
+
+        <button class="menu-trigger" type="button">
+          <span class="menu-lines"></span>
+          <span>Menu</span>
+        </button>
+
+        <div class="home-search">
+          <input type="search" placeholder="Search Nexium phones, tablets, accessories">
+          <button type="button">Search</button>
+        </div>
+
+        <div class="quick-actions">
+          <a href="store-locator.html" class="quick-action-link" aria-label="Find a store location">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 21s6-5.53 6-11a6 6 0 1 0-12 0c0 5.47 6 11 6 11Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+            </span>
+            <span class="quick-action-copy">
+              <span>Store Locator</span>
+              <small data-selected-branch>Colombo - Main Branch</small>
+            </span>
+          </a>
+          <a href="cart.html" class="quick-action-link" aria-label="Open cart page">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"></path>
+                <circle cx="10" cy="19" r="1.6"></circle>
+                <circle cx="17" cy="19" r="1.6"></circle>
+              </svg>
+            </span>
+            <span>Cart</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-secondary">
+      <div class="shell secondary-inner">
+        <nav class="secondary-links">
+          <a href="index.html#featured-offers">Top Deals</a>
+          <a href="index.html#featured-products">Featured Products</a>
+          <a href="index.html#advice">Discover</a>
+          <a href="index.html#preowned">Certified Pre-Owned</a>
+          <a href="customization-studio.html#customization-studio">Customization Studio</a>
+          <a href="index.html#catalog">Explore Items</a>
+          <a href="index.html#advice">Gift Ideas</a>
+        </nav>
+        <nav class="secondary-links secondary-links-right">
+          <a href="index.html#rewards">Rewards</a>
+          <a href="index.html#support">Order Status</a>
+          <a href="saved-items.html">Saved Items</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <section class="shell checkout-section" id="checkout">
+      <div class="checkout-header">
+        <div>
+          <h2>Checkout</h2>
+          <p>Complete your order in a few steps.</p>
+        </div>
+        <div class="checkout-steps" aria-label="Checkout progress">
+          <span class="checkout-step is-active">1 Details</span>
+          <span class="checkout-step">2 Delivery</span>
+          <span class="checkout-step">3 Payment</span>
+        </div>
+      </div>
+
+      <div class="checkout-layout">
+        <form class="checkout-form" autocomplete="on">
+          <article class="checkout-card">
+            <h3>Contact & Shipping</h3>
+            <div class="checkout-grid">
+              <label class="checkout-field">
+                <span>Email</span>
+                <input type="email" placeholder="name@email.com" required>
+              </label>
+              <label class="checkout-field">
+                <span>Phone</span>
+                <input type="tel" placeholder="+94 77 123 4567" required>
+              </label>
+              <label class="checkout-field">
+                <span>First name</span>
+                <input type="text" placeholder="Amaya" required>
+              </label>
+              <label class="checkout-field">
+                <span>Last name</span>
+                <input type="text" placeholder="Perera" required>
+              </label>
+              <label class="checkout-field checkout-field-full">
+                <span>Address</span>
+                <input type="text" placeholder="123 Galle Road" required>
+              </label>
+              <label class="checkout-field">
+                <span>City</span>
+                <input type="text" placeholder="Colombo" required>
+              </label>
+              <label class="checkout-field">
+                <span>Postal code</span>
+                <input type="text" placeholder="00200" required>
+              </label>
+            </div>
+          </article>
+
+          <article class="checkout-card">
+            <h3>Delivery Method</h3>
+            <div class="checkout-options">
+              <label class="checkout-option">
+                <input type="radio" name="delivery" checked>
+                <span>
+                  <strong>Home delivery</strong>
+                  <small>2-3 business days - Free</small>
+                </span>
+              </label>
+              <label class="checkout-option">
+                <input type="radio" name="delivery">
+                <span>
+                  <strong>Express delivery</strong>
+                  <small>Next day - $9.99</small>
+                </span>
+              </label>
+              <label class="checkout-option">
+                <input type="radio" name="delivery">
+                <span>
+                  <strong>Store pickup</strong>
+                  <small>Pick up today at Colombo - Main Branch</small>
+                </span>
+              </label>
+            </div>
+          </article>
+
+          <article class="checkout-card">
+            <h3>Payment</h3>
+            <div class="checkout-options checkout-options-compact">
+              <label class="checkout-option">
+                <input type="radio" name="payment" checked>
+                <span>
+                  <strong>Card</strong>
+                  <small>Visa, Mastercard, Amex</small>
+                </span>
+              </label>
+              <label class="checkout-option">
+                <input type="radio" name="payment">
+                <span>
+                  <strong>Pay on delivery</strong>
+                  <small>Cash or card at door</small>
+                </span>
+              </label>
+            </div>
+            <div class="checkout-grid checkout-payment-grid">
+              <label class="checkout-field checkout-field-full">
+                <span>Card number</span>
+                <input type="text" placeholder="1234 5678 9012 3456" required>
+              </label>
+              <label class="checkout-field">
+                <span>Expiry</span>
+                <input type="text" placeholder="MM/YY" required>
+              </label>
+              <label class="checkout-field">
+                <span>CVC</span>
+                <input type="text" placeholder="123" required>
+              </label>
+              <label class="checkout-field checkout-field-full">
+                <span>Name on card</span>
+                <input type="text" placeholder="Amaya Perera" required>
+              </label>
+            </div>
+          </article>
+
+          <div class="checkout-actions">
+            <a class="checkout-secondary" href="cart.html">Return to cart</a>
+            <button type="submit" class="checkout-primary">Place Order</button>
+          </div>
+        </form>
+
+        <aside class="checkout-summary">
+          <h3>Order Summary</h3>
+          <div class="checkout-summary-row">
+            <span>Subtotal</span>
+            <strong data-checkout-subtotal>$0.00</strong>
+          </div>
+          <div class="checkout-summary-row">
+            <span>Delivery</span>
+            <strong>Free</strong>
+          </div>
+          <div class="checkout-summary-row checkout-summary-total">
+            <span>Total</span>
+            <strong data-checkout-total>$0.00</strong>
+          </div>
+          <div class="checkout-summary-items" data-checkout-items></div>
+          <p class="checkout-summary-empty" data-checkout-empty hidden>Your cart is empty. Add items to see them here.</p>
+          <button type="button" class="checkout-primary" data-checkout-pay>Pay now</button>
+          <p class="checkout-summary-note">By placing your order you agree to our terms and privacy policy.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer" id="support">
+    <div class="shell footer-support-strip">
+      <article>
+        <div class="support-icon">?</div>
+        <a href="#">Visit our Support Center</a>
+      </article>
+      <article>
+        <div class="support-icon">[]</div>
+        <a href="#">Check your Order Status</a>
+      </article>
+      <article>
+        <div class="support-icon"><-></div>
+        <a href="#">Shipping, Delivery & Pickup</a>
+      </article>
+      <article>
+        <div class="support-icon"><-</div>
+        <a href="#">Returns & Exchanges</a>
+      </article>
+      <article>
+        <div class="support-icon">$</div>
+        <a href="#">Price Match Guarantee</a>
+      </article>
+    </div>
+
+    <div class="shell footer-columns">
+      <div class="footer-links-grid">
+        <div>
+          <h3>Order & Purchases</h3>
+          <a href="#">Check order status</a>
+          <a href="#">Shipping, delivery & pickup</a>
+          <a href="#">Returns & exchanges</a>
+          <a href="#">Trade-in program</a>
+          <a href="#">Gift cards</a>
+        </div>
+        <div>
+          <h3>Support & Services</h3>
+          <a href="#">Visit support center</a>
+          <a href="#">Shop with an expert</a>
+          <a href="#">Schedule a service</a>
+          <a href="#">Protection plans</a>
+          <a href="#">Contact us</a>
+        </div>
+        <div>
+          <h3>Rewards & Membership</h3>
+          <a href="#">Nexium Plus</a>
+          <a href="#">Earn points on every purchase</a>
+          <a href="#">Redeem for discounts, promos & free accessories</a>
+          <a href="#">Saved items</a>
+        </div>
+        <div>
+          <h3>About Nexium</h3>
+          <a href="docs/project-charter.md">Project Charter</a>
+          <a href="docs/solution-architecture.md">Solution Architecture</a>
+          <a href="docs/release-plan.md">Release Plan</a>
+          <a href="docs/ui-ux-design-specification.md">UI/UX Specification</a>
+          <a href="#">Corporate responsibility</a>
+        </div>
+      </div>
+
+      <aside class="footer-panel">
+        <a class="signin-link" href="#">Sign in or Create Account</a>
+        <div class="footer-panel-block">
+          <h3>Get the latest deals and more.</h3>
+          <div class="signup-row">
+            <input type="email" placeholder="Enter email address">
+            <button type="button">Sign Up</button>
+          </div>
+        </div>
+        <div class="footer-panel-block">
+          <h3>Nexium app</h3>
+          <p>Track orders, manage alerts, and browse premium tech on the go.</p>
+        </div>
+        <div class="social-row">
+          <span>O</span>
+          <span>O</span>
+          <span>O</span>
+          <span>O</span>
+          <span>O</span>
+          <span>O</span>
+        </div>
+      </aside>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

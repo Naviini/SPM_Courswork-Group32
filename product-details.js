@@ -23,7 +23,7 @@
     rating: 4.9,
     reviews: 157,
     brand: "Samsung",
-    image: "assets/assets2/Samsung%20Galaxy%20S26%20Ultra.jpeg",
+    image: "assets/Samsung/THUMB_007-galaxy-s26ultra-cobaltviolet-back-right-30-spen.jpg",
     tag: "Trade-in offer",
   };
 

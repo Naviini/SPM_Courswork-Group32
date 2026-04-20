@@ -2015,6 +2015,71 @@ const renderCartAndSavedItemsInCartPage = () => {
   updateCartSummaryTotals();
 };
 
+const renderCheckoutSummary = () => {
+  const summaryItems = document.querySelector("[data-checkout-items]");
+  const emptyState = document.querySelector("[data-checkout-empty]");
+  const subtotalElement = document.querySelector("[data-checkout-subtotal]");
+  const totalElement = document.querySelector("[data-checkout-total]");
+  const payButton = document.querySelector("[data-checkout-pay]");
+
+  if (!summaryItems && !subtotalElement && !totalElement) {
+    return;
+  }
+
+  const cartItems = getCartProducts();
+  const cartSubtotal = getCartProductsSubtotal();
+
+  if (subtotalElement) {
+    subtotalElement.textContent = formatUsdCurrency(cartSubtotal);
+  }
+
+  if (totalElement) {
+    totalElement.textContent = formatUsdCurrency(cartSubtotal);
+  }
+
+  if (summaryItems) {
+    if (!cartItems.length) {
+      summaryItems.innerHTML = "";
+      if (emptyState) {
+        emptyState.hidden = false;
+      }
+    } else {
+      if (emptyState) {
+        emptyState.hidden = true;
+      }
+
+      summaryItems.innerHTML = cartItems
+        .map((product) => {
+          const productName = escapeHtml(product.name);
+          const productSubtitle = escapeHtml(product.subtitle || "");
+          const imageUrl = escapeHtml(product.image || "");
+          const quantity = clampCartQuantity(product.quantity);
+          const lineTotal = parseProductPrice(product.price, 0) * quantity;
+          const subtitleLine = productSubtitle ? `${productSubtitle} · Qty ${quantity}` : `Qty ${quantity}`;
+          const thumbStyle = imageUrl
+            ? ` style="background-image: url('${imageUrl}');"`
+            : "";
+
+          return `
+            <div class="checkout-item">
+              <div class="checkout-item-thumb"${thumbStyle}></div>
+              <div>
+                <strong>${productName}</strong>
+                <small>${escapeHtml(subtitleLine)}</small>
+              </div>
+              <span>${formatUsdCurrency(lineTotal)}</span>
+            </div>
+          `;
+        })
+        .join("");
+    }
+  }
+
+  if (payButton instanceof HTMLButtonElement) {
+    payButton.disabled = !cartItems.length;
+  }
+};
+
 const attachCartSavedItemsActions = () => {
   const cartItemsList = document.querySelector("[data-cart-items-list]");
   const savedItemsList = document.querySelector("[data-saved-items-list]");
@@ -2104,6 +2169,9 @@ const attachCartSavedItemsActions = () => {
     });
   }
 };
+
+renderCheckoutSummary();
+window.addEventListener(SHOPPING_STATE_EVENT, renderCheckoutSummary);
 
 const normalizeHexColor = (value, fallback = "#ffffff") => {
   const normalizedValue = typeof value === "string" ? value.trim() : "";

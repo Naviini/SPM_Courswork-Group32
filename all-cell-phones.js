@@ -207,7 +207,7 @@ const products = [
     moreBuyingFrom: 945.99,
     image: "assets/assets2/Samsung%20Galaxy%20S26%20Ultra.jpeg",
     variants: [
-      "assets/assets2/Samsung%20Galaxy%20S26%20Ultra.jpeg",
+      "assets/Samsung/THUMB_007-galaxy-s26ultra-cobaltviolet-back-right-30-spen.jpg",
       "assets/assets2/google-pixel-c2.jpg",
       "assets/assets2/Apple%20iPhone%20Air.jpeg",
       "assets/assets2/Motorola%20-%20moto%20g%20power%202026%20128GB%20%28Unlocked%29.jpeg",

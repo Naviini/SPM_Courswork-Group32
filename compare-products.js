@@ -136,7 +136,7 @@
       consQuote: "Not enough negative mentions yet.",
       consTags: [],
       customerImages: [
-        "assets/assets2/Samsung%20Galaxy%20S26%20Ultra.jpeg",
+        "assets/Samsung/THUMB_007-galaxy-s26ultra-cobaltviolet-back-right-30-spen.jpg",
         "assets/assets2/offer-samsung.jpg",
         "assets/assets2/offer-accessories.jpg",
       ],
