@@ -22,6 +22,8 @@ body {
 
 body.phones-page {
   overflow-x: hidden;
+  --site-max-width: 100vw;
+  --site-gutter-inline: 24px;
 }
 
 a {

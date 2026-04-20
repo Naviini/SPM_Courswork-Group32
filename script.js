@@ -21,6 +21,7 @@ const MAX_CUSTOM_TEXT_SIZE = 54;
 const DEFAULT_CUSTOM_TEXT_SIZE = 32;
 const MAX_CUSTOM_ITEM_QUANTITY = 20;
 let lastMeasuredHeaderHeight = 0;
+let maxMeasuredHeaderHeight = 0;
 
 const getSavedBranchName = () => {
   try {
@@ -79,13 +80,15 @@ const syncStickyHeaderOffset = () => {
   }
 
   const headerHeight = Math.round(pageHeader.getBoundingClientRect().height);
-  if (headerHeight === lastMeasuredHeaderHeight) {
-    return;
+  if (headerHeight !== lastMeasuredHeaderHeight) {
+    lastMeasuredHeaderHeight = headerHeight;
+    document.documentElement.style.setProperty("--side-menu-top", `${headerHeight}px`);
   }
 
-  lastMeasuredHeaderHeight = headerHeight;
-  document.documentElement.style.setProperty("--side-menu-top", `${headerHeight}px`);
-  document.documentElement.style.setProperty("--sticky-header-height", `${headerHeight}px`);
+  if (headerHeight > maxMeasuredHeaderHeight) {
+    maxMeasuredHeaderHeight = headerHeight;
+    document.documentElement.style.setProperty("--sticky-header-height", `${maxMeasuredHeaderHeight}px`);
+  }
 };
 
 const initializeCollapsibleHeader = () => {
