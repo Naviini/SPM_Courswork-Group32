@@ -13,6 +13,9 @@ const BRANCH_STORAGE_KEY = "selectedBranchName";
 const DEFAULT_BRANCH_NAME = "Colombo - Main Branch";
 const CUSTOMIZATION_ORDER_STORAGE_KEY = "nexiumCustomizationOrders";
 const CUSTOMIZATION_PROMO_STORAGE_KEY = "nexiumCustomizationPromo";
+const SAVED_ITEMS_STORAGE_KEY = "nexiumSavedItems";
+const CART_ITEMS_STORAGE_KEY = "nexiumCartItems";
+const SHOPPING_STATE_EVENT = "nexium:shopping-state-updated";
 const MAX_STICKERS_PER_DESIGN = 6;
 const MIN_STICKER_SIZE = 24;
 const MAX_STICKER_SIZE = 56;
@@ -20,8 +23,275 @@ const MIN_CUSTOM_TEXT_SIZE = 22;
 const MAX_CUSTOM_TEXT_SIZE = 54;
 const DEFAULT_CUSTOM_TEXT_SIZE = 32;
 const MAX_CUSTOM_ITEM_QUANTITY = 20;
+const MAX_CART_ITEM_QUANTITY = 20;
 let lastMeasuredHeaderHeight = 0;
 let maxMeasuredHeaderHeight = 0;
+
+const sanitizeProductText = (value, fallback = "") =>
+  String(value ?? fallback)
+    .replace(/\s+/g, " ")
+    .trim();
+
+const slugifyProductId = (value) => {
+  const normalized = sanitizeProductText(value, "item")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return normalized || "item";
+};
+
+const parseProductPrice = (value, fallback = 0) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, value);
+  }
+
+  const numericValue = String(value || "").replace(/[^\d.]/g, "");
+  const parsedValue = Number.parseFloat(numericValue);
+  return Number.isFinite(parsedValue) ? Math.max(0, parsedValue) : fallback;
+};
+
+const clampCartQuantity = (quantityValue) => {
+  const parsedQuantity = Number(quantityValue);
+  if (!Number.isFinite(parsedQuantity)) {
+    return 1;
+  }
+
+  return Math.min(MAX_CART_ITEM_QUANTITY, Math.max(1, Math.round(parsedQuantity)));
+};
+
+const normalizeProductImage = (imageValue) => {
+  const normalizedImage = sanitizeProductText(imageValue, "");
+  if (!normalizedImage) {
+    return "";
+  }
+
+  if (/^(https?:|data:image\/|blob:|\/)/i.test(normalizedImage)) {
+    return normalizedImage;
+  }
+
+  try {
+    return new URL(normalizedImage, window.location.href).toString();
+  } catch {
+    return normalizedImage;
+  }
+};
+
+const normalizeStoredProduct = (rawProduct, defaultQuantity = 1) => {
+  const name = sanitizeProductText(rawProduct?.name, "Nexium Device");
+  const subtitle = sanitizeProductText(rawProduct?.subtitle, "");
+  const idSeed = sanitizeProductText(rawProduct?.id, "") || `${name}-${subtitle || "default"}`;
+
+  return {
+    id: slugifyProductId(idSeed),
+    name,
+    subtitle,
+    brand: sanitizeProductText(rawProduct?.brand, sanitizeProductText(name.split("-")[0], "Nexium")),
+    tag: sanitizeProductText(rawProduct?.tag, "Featured deal"),
+    price: parseProductPrice(rawProduct?.price, 0),
+    image: normalizeProductImage(rawProduct?.image),
+    quantity: clampCartQuantity(rawProduct?.quantity ?? defaultQuantity),
+  };
+};
+
+const readStoredProducts = (storageKey) => {
+  try {
+    const rawValue = localStorage.getItem(storageKey);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return Array.isArray(parsedValue) ? parsedValue : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeStoredProducts = (storageKey, products) => {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(products));
+  } catch {
+    // Ignore storage errors in restricted contexts.
+  }
+};
+
+const dedupeSavedProducts = (products) => {
+  const deduped = [];
+  const seenIds = new Set();
+
+  products.forEach((product) => {
+    const normalized = normalizeStoredProduct(product, 1);
+    if (seenIds.has(normalized.id)) {
+      return;
+    }
+
+    seenIds.add(normalized.id);
+    deduped.push({ ...normalized, quantity: 1 });
+  });
+
+  return deduped;
+};
+
+const mergeCartProducts = (products) => {
+  const cartMap = new Map();
+
+  products.forEach((product) => {
+    const normalized = normalizeStoredProduct(product, 1);
+    const existing = cartMap.get(normalized.id);
+
+    if (!existing) {
+      cartMap.set(normalized.id, normalized);
+      return;
+    }
+
+    existing.quantity = clampCartQuantity(existing.quantity + clampCartQuantity(product?.quantity ?? 1));
+
+    if (!existing.image && normalized.image) {
+      existing.image = normalized.image;
+    }
+
+    if (!existing.subtitle && normalized.subtitle) {
+      existing.subtitle = normalized.subtitle;
+    }
+  });
+
+  return Array.from(cartMap.values());
+};
+
+const getSavedProducts = () => dedupeSavedProducts(readStoredProducts(SAVED_ITEMS_STORAGE_KEY));
+
+const getCartProducts = () => mergeCartProducts(readStoredProducts(CART_ITEMS_STORAGE_KEY));
+
+const emitShoppingStateChanged = () => {
+  window.dispatchEvent(
+    new CustomEvent(SHOPPING_STATE_EVENT, {
+      detail: {
+        savedItems: getSavedProducts(),
+        cartItems: getCartProducts(),
+      },
+    })
+  );
+};
+
+const persistSavedProducts = (products, shouldEmit = true) => {
+  const normalizedProducts = dedupeSavedProducts(products);
+  writeStoredProducts(SAVED_ITEMS_STORAGE_KEY, normalizedProducts);
+
+  if (shouldEmit) {
+    emitShoppingStateChanged();
+  }
+
+  return normalizedProducts;
+};
+
+const persistCartProducts = (products, shouldEmit = true) => {
+  const normalizedProducts = mergeCartProducts(products);
+  writeStoredProducts(CART_ITEMS_STORAGE_KEY, normalizedProducts);
+
+  if (shouldEmit) {
+    emitShoppingStateChanged();
+  }
+
+  return normalizedProducts;
+};
+
+const isSavedProductId = (productId) => {
+  const normalizedId = slugifyProductId(productId);
+  return getSavedProducts().some((product) => product.id === normalizedId);
+};
+
+const toggleSavedProduct = (rawProduct) => {
+  const normalizedProduct = normalizeStoredProduct(rawProduct, 1);
+  const savedProducts = getSavedProducts();
+  const existingIndex = savedProducts.findIndex((product) => product.id === normalizedProduct.id);
+
+  let isSaved = false;
+
+  if (existingIndex >= 0) {
+    savedProducts.splice(existingIndex, 1);
+  } else {
+    savedProducts.unshift({ ...normalizedProduct, quantity: 1 });
+    isSaved = true;
+  }
+
+  persistSavedProducts(savedProducts);
+
+  return {
+    isSaved,
+    item: normalizedProduct,
+  };
+};
+
+const addProductToCart = (rawProduct, quantity = 1) => {
+  const normalizedProduct = normalizeStoredProduct({ ...rawProduct, quantity }, quantity);
+  const cartProducts = getCartProducts();
+  const existingProduct = cartProducts.find((product) => product.id === normalizedProduct.id);
+
+  if (existingProduct) {
+    existingProduct.quantity = clampCartQuantity(existingProduct.quantity + normalizedProduct.quantity);
+  } else {
+    cartProducts.unshift(normalizedProduct);
+  }
+
+  persistCartProducts(cartProducts);
+  return normalizedProduct;
+};
+
+const removeProductFromSaved = (productId) => {
+  const normalizedId = slugifyProductId(productId);
+  const nextProducts = getSavedProducts().filter((product) => product.id !== normalizedId);
+  persistSavedProducts(nextProducts);
+};
+
+const removeProductFromCart = (productId) => {
+  const normalizedId = slugifyProductId(productId);
+  const nextProducts = getCartProducts().filter((product) => product.id !== normalizedId);
+  persistCartProducts(nextProducts);
+};
+
+const updateProductCartQuantity = (productId, quantityValue) => {
+  const normalizedId = slugifyProductId(productId);
+  const nextQuantity = clampCartQuantity(quantityValue);
+  const nextProducts = getCartProducts().map((product) => {
+    if (product.id !== normalizedId) {
+      return product;
+    }
+
+    return {
+      ...product,
+      quantity: nextQuantity,
+    };
+  });
+
+  persistCartProducts(nextProducts);
+};
+
+const moveSavedProductToCart = (productId) => {
+  const normalizedId = slugifyProductId(productId);
+  const savedProduct = getSavedProducts().find((product) => product.id === normalizedId);
+  if (!savedProduct) {
+    return;
+  }
+
+  addProductToCart(savedProduct, 1);
+  removeProductFromSaved(normalizedId);
+};
+
+window.NexiumShopState = {
+  eventName: SHOPPING_STATE_EVENT,
+  normalizeProduct: normalizeStoredProduct,
+  getSavedItems: getSavedProducts,
+  getCartItems: getCartProducts,
+  isSavedItem: isSavedProductId,
+  toggleSavedItem: toggleSavedProduct,
+  addItemToCart: addProductToCart,
+  removeSavedItem: removeProductFromSaved,
+  removeCartItem: removeProductFromCart,
+  updateCartItemQuantity: updateProductCartQuantity,
+  moveSavedItemToCart: moveSavedProductToCart,
+  emitStateChanged: emitShoppingStateChanged,
+};
 
 const getSavedBranchName = () => {
   try {
@@ -220,7 +490,7 @@ const initializeSideMenu = () => {
   ];
 
   const departmentLinks = [
-    { label: "Mobile Phones", href: "index.html#catalog" },
+    { label: "Mobile Phones", href: "all-cell-phones.html" },
     { label: "Headphones", href: "index.html#accessories" },
     { label: "Tableats", href: "index.html#catalog" },
     { label: "Chagers", href: "index.html#accessories" },
@@ -653,6 +923,305 @@ const buildProductDetailsHref = (card) => {
   return `product-details.html?${params.toString()}`;
 };
 
+const getStoredProductFromCard = (card) => {
+  if (!card) {
+    return null;
+  }
+
+  const name = sanitizeProductText(
+    card.querySelector("h3")?.textContent ||
+      card.querySelector(".product-title")?.textContent ||
+      card.dataset.productName ||
+      ""
+  );
+
+  if (!name) {
+    return null;
+  }
+
+  const subtitle = sanitizeProductText(
+    card.querySelector(".retail-subtitle")?.textContent ||
+      card.querySelector(".product-subtitle")?.textContent ||
+      card.querySelector("p")?.textContent ||
+      card.dataset.productSubtitle ||
+      ""
+  );
+
+  const price = parseProductPrice(
+    card.querySelector(".price-big")?.textContent ||
+      card.querySelector(".product-price")?.textContent ||
+      card.dataset.productPrice ||
+      "0",
+    0
+  );
+
+  const image =
+    card.querySelector("img")?.getAttribute("src") ||
+    extractBackgroundImageUrl(card.querySelector(".retail-art")) ||
+    extractBackgroundImageUrl(card.querySelector(".product-art")) ||
+    extractBackgroundImageUrl(card.querySelector(".featured-art")) ||
+    extractBackgroundImageUrl(card.querySelector(".mini-product-art")) ||
+    "";
+
+  const tag = sanitizeProductText(
+    card.querySelector(".deal-tag")?.textContent ||
+      card.querySelector(".card-pill")?.textContent ||
+      card.dataset.productTag ||
+      "Featured deal"
+  );
+
+  const idSeed = card.dataset.productId || card.dataset.product || `${name}-${subtitle || "default"}`;
+
+  return normalizeStoredProduct({
+    id: idSeed,
+    name,
+    subtitle,
+    price,
+    image,
+    brand: sanitizeProductText(card.dataset.productBrand || inferBrandFromTitle(name), "Nexium"),
+    tag,
+  });
+};
+
+const setHeartButtonState = (button, isSaved) => {
+  if (!button) {
+    return;
+  }
+
+  button.classList.toggle("is-saved", isSaved);
+  button.setAttribute("aria-pressed", String(isSaved));
+  button.textContent = isSaved ? "♥" : "♡";
+};
+
+const setTextSaveButtonState = (button, isSaved) => {
+  if (!button) {
+    return;
+  }
+
+  button.classList.toggle("is-saved", isSaved);
+  button.setAttribute("aria-pressed", String(isSaved));
+  button.textContent = isSaved ? "Saved" : "Save";
+};
+
+const showCartButtonFeedback = (button, addedText = "Added") => {
+  if (!button || button.dataset.feedbackState === "locked") {
+    return;
+  }
+
+  const originalText = button.dataset.originalText || button.textContent;
+  button.dataset.originalText = originalText;
+  button.dataset.feedbackState = "locked";
+  button.textContent = addedText;
+
+  window.setTimeout(() => {
+    button.textContent = button.dataset.originalText || originalText;
+    button.dataset.feedbackState = "";
+  }, 1100);
+};
+
+const initializeRetailWishlistButtons = () => {
+  document.querySelectorAll(".retail-product-card .heart-button").forEach((button) => {
+    const productCard = button.closest(".retail-product-card");
+    const product = getStoredProductFromCard(productCard);
+
+    if (!product) {
+      return;
+    }
+
+    setHeartButtonState(button, isSavedProductId(product.id));
+
+    if (button.dataset.savedBound === "true") {
+      return;
+    }
+
+    button.dataset.savedBound = "true";
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const result = toggleSavedProduct(product);
+      setHeartButtonState(button, result.isSaved);
+    });
+  });
+};
+
+const getStoredProductFromDetailsPage = () => {
+  const detailParams = new URLSearchParams(window.location.search);
+
+  const title = sanitizeProductText(
+    detailParams.get("name") || document.getElementById("detailTitle")?.textContent || ""
+  );
+  if (!title) {
+    return null;
+  }
+
+  const subtitle = sanitizeProductText(
+    detailParams.get("subtitle") ||
+      document.querySelector(".detail-subtitle")?.textContent ||
+      document.querySelector(".detail-description")?.textContent ||
+      ""
+  );
+
+  const price = parseProductPrice(
+    detailParams.get("price") || document.getElementById("detailPrice")?.textContent || "0",
+    0
+  );
+  const image =
+    detailParams.get("image") ||
+    document.getElementById("detailMainImage")?.getAttribute("src") ||
+    document.getElementById("detailStickyImage")?.getAttribute("src") ||
+    "";
+
+  const brand = sanitizeProductText(
+    detailParams.get("brand") || document.getElementById("detailBrand")?.textContent || inferBrandFromTitle(title),
+    "Nexium"
+  );
+
+  const tag = sanitizeProductText(
+    detailParams.get("tag") || document.getElementById("detailTag")?.textContent || "Featured deal"
+  );
+
+  return normalizeStoredProduct({
+    id: `${title}-${subtitle || brand}`,
+    name: title,
+    subtitle,
+    price,
+    image,
+    brand,
+    tag,
+  });
+};
+
+const getStoredProductFromAsideCard = (card) => {
+  if (!card) {
+    return null;
+  }
+
+  const name = sanitizeProductText(card.querySelector("p")?.textContent || "");
+  if (!name) {
+    return null;
+  }
+
+  return normalizeStoredProduct({
+    id: name,
+    name,
+    subtitle: "Accessory",
+    price: parseProductPrice(card.querySelector("strong")?.textContent || "0", 0),
+    image: card.querySelector("img")?.getAttribute("src") || "",
+    brand: inferBrandFromTitle(name),
+    tag: "Accessory",
+  });
+};
+
+const getStoredProductFromCartRecommendation = (card) => {
+  if (!card) {
+    return null;
+  }
+
+  const name = sanitizeProductText(card.querySelector("p")?.textContent || "");
+  if (!name) {
+    return null;
+  }
+
+  return normalizeStoredProduct({
+    id: name,
+    name,
+    subtitle: "Recommended item",
+    price: parseProductPrice(card.querySelector("strong")?.textContent || "0", 0),
+    image:
+      card.querySelector("img")?.getAttribute("src") ||
+      extractBackgroundImageUrl(card.querySelector(".cart-product-art")) ||
+      "",
+    brand: inferBrandFromTitle(name),
+    tag: "Recommended",
+  });
+};
+
+const initializeProductDetailsActions = () => {
+  const detailSaveButton = document.querySelector(".detail-save-button");
+  const detailAddButtons = document.querySelectorAll(".detail-cart-button, .detail-sticky-add-button");
+  const detailAccessoryButtons = document.querySelectorAll(".aside-product-card button, .aside-related-card button");
+  const detailProduct = getStoredProductFromDetailsPage();
+
+  if (detailSaveButton && detailProduct) {
+    setTextSaveButtonState(detailSaveButton, isSavedProductId(detailProduct.id));
+
+    if (detailSaveButton.dataset.savedBound !== "true") {
+      detailSaveButton.dataset.savedBound = "true";
+      detailSaveButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        const result = toggleSavedProduct(detailProduct);
+        setTextSaveButtonState(detailSaveButton, result.isSaved);
+      });
+    }
+  }
+
+  detailAddButtons.forEach((button) => {
+    if (!detailProduct) {
+      return;
+    }
+
+    if (button.dataset.cartBound === "true") {
+      return;
+    }
+
+    button.dataset.cartBound = "true";
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      addProductToCart(detailProduct, 1);
+      showCartButtonFeedback(button);
+    });
+  });
+
+  detailAccessoryButtons.forEach((button) => {
+    if (button.dataset.cartBound === "true") {
+      return;
+    }
+
+    const card = button.closest(".aside-product-card");
+    const accessoryProduct = getStoredProductFromAsideCard(card);
+    if (!accessoryProduct) {
+      return;
+    }
+
+    button.dataset.cartBound = "true";
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      addProductToCart(accessoryProduct, 1);
+      showCartButtonFeedback(button);
+    });
+  });
+};
+
+const initializeCartRecommendationButtons = () => {
+  document.querySelectorAll(".cart-product-card button").forEach((button) => {
+    if (button.classList.contains("cart-next")) {
+      return;
+    }
+
+    if (!/add\s+to\s+cart/i.test(button.textContent || "")) {
+      return;
+    }
+
+    if (button.dataset.cartBound === "true") {
+      return;
+    }
+
+    const card = button.closest(".cart-product-card");
+    const product = getStoredProductFromCartRecommendation(card);
+    if (!product) {
+      return;
+    }
+
+    button.dataset.cartBound = "true";
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      addProductToCart(product, 1);
+      showCartButtonFeedback(button);
+    });
+  });
+};
+
 const initializeHomepageProductNavigation = () => {
   const cards = document.querySelectorAll(".retail-product-card, .featured-item, .mini-product, .offer-card");
 
@@ -699,9 +1268,26 @@ const initializeHomepageProductNavigation = () => {
       link.href = buildProductDetailsHref(card);
     });
 
-    const detailButton = card.querySelector(".retail-cta, .offer-button");
-    if (detailButton) {
-      detailButton.addEventListener("click", (event) => {
+    const retailCtaButton = card.querySelector(".retail-cta");
+    if (retailCtaButton) {
+      retailCtaButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const product = getStoredProductFromCard(card);
+        if (!product) {
+          navigateToDetails();
+          return;
+        }
+
+        addProductToCart(product, 1);
+        showCartButtonFeedback(retailCtaButton);
+      });
+    }
+
+    const offerButton = card.querySelector(".offer-button");
+    if (offerButton) {
+      offerButton.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
         navigateToDetails();
@@ -711,6 +1297,14 @@ const initializeHomepageProductNavigation = () => {
 };
 
 initializeHomepageProductNavigation();
+initializeRetailWishlistButtons();
+initializeProductDetailsActions();
+initializeCartRecommendationButtons();
+
+window.addEventListener(SHOPPING_STATE_EVENT, () => {
+  initializeRetailWishlistButtons();
+  initializeProductDetailsActions();
+});
 
 compareButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -739,14 +1333,14 @@ const dealsCategoryGrid = document.querySelector(".deals-category-grid");
 if (dealsCategoryGrid) {
   const dealsCategories = [
     { thumb: "thumb-top-100-deals-image", label: "Top 100 Deals" },
-    { thumb: "thumb-mobile-phone-deals", label: "Mobile Phones" },
+    { thumb: "thumb-mobile-phone-deals", label: "Mobile Phones", href: "all-cell-phones.html" },
     { thumb: "thumb-mobile-phone-accessories-image", label: "Mobile Phone Accessories" },
     { thumb: "thumb-tablets-ereaders-image", label: "Tablets, E-Readers & Accessories" },
     { thumb: "thumb-refurbished-preowned-image", label: "Refurbished & Pre-owned Phones" },
     { thumb: "thumb-samsung-image", label: "Samsung" },
     { thumb: "thumb-apple-image", label: "Apple" },
     { thumb: "thumb-charger-case-image", label: "Charger, Case" },
-    { thumb: "thumb-mobile-phones-image", label: "Mobile Phones Deals" },
+    { thumb: "thumb-mobile-phones-image", label: "Mobile Phones Deals", href: "all-cell-phones.html" },
     { thumb: "thumb-headphones-image", label: "Headphones" },
     { thumb: "thumb-screen-protection-image", label: "Screen Protcection" },
     { thumb: "thumb-google-pixel-image", label: "Google Pixel" },
@@ -763,6 +1357,34 @@ if (dealsCategoryGrid) {
   const attachDealsNavigationHandlers = () => {
     const prevButton = dealsCategoryGrid.querySelector(".deals-prev");
     const nextButton = dealsCategoryGrid.querySelector(".deals-next");
+    const categoryLinks = dealsCategoryGrid.querySelectorAll(".deals-category-item[data-target-href]");
+
+    categoryLinks.forEach((categoryItem) => {
+      const targetHref = categoryItem.getAttribute("data-target-href");
+
+      if (!targetHref) {
+        return;
+      }
+
+      categoryItem.addEventListener("click", (event) => {
+        const target = event.target;
+
+        if (target instanceof Element && target.closest(".deals-prev, .deals-next")) {
+          return;
+        }
+
+        window.location.href = targetHref;
+      });
+
+      categoryItem.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        event.preventDefault();
+        window.location.href = targetHref;
+      });
+    });
 
     if (prevButton) {
       prevButton.addEventListener("click", () => {
@@ -790,9 +1412,12 @@ if (dealsCategoryGrid) {
         const isFirstVisible = index === 0;
         const showPrevButton = currentPage > 0;
         const isLastVisible = index === pageItems.length - 1;
+        const linkAttributes = item.href
+          ? ` data-target-href="${item.href}" role="link" tabindex="0"`
+          : "";
 
         return `
-          <article class="deals-category-item${isLastVisible ? " deals-category-item-last" : ""}">
+          <article class="deals-category-item${isLastVisible ? " deals-category-item-last" : ""}"${linkAttributes}>
             <div class="deals-thumb ${item.thumb}"></div>
             <p>${item.label}</p>
             ${
@@ -1215,6 +1840,270 @@ const escapeHtml = (value) =>
 
     return htmlEntities[character] || character;
   });
+
+const getCartProductsSubtotal = () =>
+  getCartProducts().reduce(
+    (runningTotal, product) => runningTotal + parseProductPrice(product.price, 0) * clampCartQuantity(product.quantity),
+    0
+  );
+
+const updateCartSummaryTotals = ({ customizationSubtotal, discountAmount } = {}) => {
+  const productsSubtotal = getCartProductsSubtotal();
+  const productsSubtotalElement = document.querySelector("[data-products-subtotal]");
+  const cartTotalElement = document.querySelector("[data-cart-total]");
+
+  if (productsSubtotalElement) {
+    productsSubtotalElement.textContent = formatUsdCurrency(productsSubtotal);
+  }
+
+  if (!cartTotalElement) {
+    return;
+  }
+
+  const customizationAmount =
+    typeof customizationSubtotal === "number"
+      ? customizationSubtotal
+      : parseProductPrice(document.querySelector("[data-customization-subtotal]")?.textContent || "0", 0);
+
+  const discountValue =
+    typeof discountAmount === "number"
+      ? discountAmount
+      : parseProductPrice(document.querySelector("[data-promo-discount]")?.textContent || "0", 0);
+
+  const totalAmount = Math.max(0, productsSubtotal + customizationAmount - discountValue);
+  cartTotalElement.textContent = formatUsdCurrency(totalAmount);
+};
+
+const renderCartAndSavedItemsInCartPage = () => {
+  const cartItemsList = document.querySelector("[data-cart-items-list]");
+  const cartItemsEmptyState = document.querySelector("[data-cart-items-empty]");
+  const cartItemsCount = document.querySelector("[data-cart-items-count]");
+  const savedItemsList = document.querySelector("[data-saved-items-list]");
+  const savedItemsEmptyState = document.querySelector("[data-saved-items-empty]");
+  const savedItemsCount = document.querySelector("[data-saved-items-count]");
+  const cartHeading = document.querySelector("[data-cart-empty-heading]");
+  const cartCopy = document.querySelector("[data-cart-empty-copy]");
+
+  if (!cartItemsList && !savedItemsList) {
+    updateCartSummaryTotals();
+    return;
+  }
+
+  const cartItems = getCartProducts();
+  const savedItems = getSavedProducts();
+  const cartUnitCount = cartItems.reduce((runningTotal, product) => runningTotal + clampCartQuantity(product.quantity), 0);
+
+  if (cartItemsCount) {
+    cartItemsCount.textContent = `(${cartUnitCount})`;
+  }
+
+  if (savedItemsCount) {
+    savedItemsCount.textContent = `(${savedItems.length})`;
+  }
+
+  if (cartHeading instanceof HTMLElement) {
+    if (!cartHeading.dataset.defaultText) {
+      cartHeading.dataset.defaultText = cartHeading.textContent || "Your cart is empty";
+    }
+
+    cartHeading.textContent = cartUnitCount
+      ? `Items in your cart (${cartUnitCount})`
+      : cartHeading.dataset.defaultText;
+  }
+
+  if (cartCopy instanceof HTMLElement) {
+    if (!cartCopy.dataset.defaultHtml) {
+      cartCopy.dataset.defaultHtml = cartCopy.innerHTML;
+    }
+
+    cartCopy.innerHTML = cartUnitCount
+      ? "Review your cart items and continue to checkout when ready."
+      : cartCopy.dataset.defaultHtml;
+  }
+
+  if (cartItemsList) {
+    if (!cartItems.length) {
+      cartItemsList.innerHTML = "";
+      if (cartItemsEmptyState) {
+        cartItemsEmptyState.hidden = false;
+      }
+    } else {
+      if (cartItemsEmptyState) {
+        cartItemsEmptyState.hidden = true;
+      }
+
+      cartItemsList.innerHTML = cartItems
+        .map((product) => {
+          const productId = escapeHtml(product.id);
+          const productName = escapeHtml(product.name);
+          const productSubtitle = escapeHtml(product.subtitle || "");
+          const imageUrl = escapeHtml(product.image || "");
+          const quantity = clampCartQuantity(product.quantity);
+          const lineTotal = product.price * quantity;
+
+          return `
+            <article class="cart-line-item">
+              <div class="cart-line-media">
+                ${imageUrl ? `<img src="${imageUrl}" alt="${productName}">` : "<span>No image</span>"}
+              </div>
+              <div class="cart-line-details">
+                <strong class="cart-line-title">${productName}</strong>
+                ${productSubtitle ? `<p class="cart-line-subtitle">${productSubtitle}</p>` : ""}
+                <div class="cart-line-price-row">
+                  <span>${formatUsdCurrency(product.price)} each</span>
+                  <strong>${formatUsdCurrency(lineTotal)}</strong>
+                </div>
+                <div class="cart-line-actions">
+                  <div class="cart-line-qty" aria-label="Quantity controls for ${productName}">
+                    <button type="button" data-cart-action="decrease" data-product-id="${productId}" aria-label="Decrease quantity for ${productName}">-</button>
+                    <span>${quantity}</span>
+                    <button type="button" data-cart-action="increase" data-product-id="${productId}" aria-label="Increase quantity for ${productName}">+</button>
+                  </div>
+                  <button type="button" class="cart-line-link" data-cart-action="move-to-saved" data-product-id="${productId}">Save for later</button>
+                  <button type="button" class="cart-line-link" data-cart-action="remove" data-product-id="${productId}">Remove</button>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+  }
+
+  if (savedItemsList) {
+    if (!savedItems.length) {
+      savedItemsList.innerHTML = "";
+      if (savedItemsEmptyState) {
+        savedItemsEmptyState.hidden = false;
+      }
+    } else {
+      if (savedItemsEmptyState) {
+        savedItemsEmptyState.hidden = true;
+      }
+
+      savedItemsList.innerHTML = savedItems
+        .map((product) => {
+          const productId = escapeHtml(product.id);
+          const productName = escapeHtml(product.name);
+          const productSubtitle = escapeHtml(product.subtitle || "");
+          const imageUrl = escapeHtml(product.image || "");
+
+          return `
+            <article class="cart-line-item">
+              <div class="cart-line-media">
+                ${imageUrl ? `<img src="${imageUrl}" alt="${productName}">` : "<span>No image</span>"}
+              </div>
+              <div class="cart-line-details">
+                <strong class="cart-line-title">${productName}</strong>
+                ${productSubtitle ? `<p class="cart-line-subtitle">${productSubtitle}</p>` : ""}
+                <div class="cart-line-price-row">
+                  <span>Saved item</span>
+                  <strong>${formatUsdCurrency(product.price)}</strong>
+                </div>
+                <div class="cart-line-actions">
+                  <button type="button" class="cart-line-primary" data-saved-action="move-to-cart" data-product-id="${productId}">Add to cart</button>
+                  <button type="button" class="cart-line-link" data-saved-action="remove" data-product-id="${productId}">Remove</button>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+  }
+
+  updateCartSummaryTotals();
+};
+
+const attachCartSavedItemsActions = () => {
+  const cartItemsList = document.querySelector("[data-cart-items-list]");
+  const savedItemsList = document.querySelector("[data-saved-items-list]");
+
+  if (cartItemsList && cartItemsList.dataset.cartActionsBound !== "true") {
+    cartItemsList.dataset.cartActionsBound = "true";
+    cartItemsList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const actionButton = target.closest("[data-cart-action]");
+      if (!actionButton) {
+        return;
+      }
+
+      const action = actionButton.getAttribute("data-cart-action");
+      const productId = actionButton.getAttribute("data-product-id");
+      if (!action || !productId) {
+        return;
+      }
+
+      const product = getCartProducts().find((item) => item.id === productId);
+      if (!product) {
+        return;
+      }
+
+      if (action === "increase") {
+        updateProductCartQuantity(productId, product.quantity + 1);
+        return;
+      }
+
+      if (action === "decrease") {
+        if (product.quantity <= 1) {
+          removeProductFromCart(productId);
+        } else {
+          updateProductCartQuantity(productId, product.quantity - 1);
+        }
+        return;
+      }
+
+      if (action === "remove") {
+        removeProductFromCart(productId);
+        return;
+      }
+
+      if (action === "move-to-saved") {
+        const currentSavedProducts = getSavedProducts();
+        if (!currentSavedProducts.some((savedProduct) => savedProduct.id === productId)) {
+          currentSavedProducts.unshift({ ...product, quantity: 1 });
+          persistSavedProducts(currentSavedProducts, false);
+        }
+
+        removeProductFromCart(productId);
+      }
+    });
+  }
+
+  if (savedItemsList && savedItemsList.dataset.savedActionsBound !== "true") {
+    savedItemsList.dataset.savedActionsBound = "true";
+    savedItemsList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const actionButton = target.closest("[data-saved-action]");
+      if (!actionButton) {
+        return;
+      }
+
+      const action = actionButton.getAttribute("data-saved-action");
+      const productId = actionButton.getAttribute("data-product-id");
+      if (!action || !productId) {
+        return;
+      }
+
+      if (action === "move-to-cart") {
+        moveSavedProductToCart(productId);
+        return;
+      }
+
+      if (action === "remove") {
+        removeProductFromSaved(productId);
+      }
+    });
+  }
+};
 
 const normalizeHexColor = (value, fallback = "#ffffff") => {
   const normalizedValue = typeof value === "string" ? value.trim() : "";
@@ -1719,7 +2608,6 @@ const renderCustomizationOrdersInCart = (options = {}) => {
   const promoDiscountRow = document.querySelector("[data-promo-discount-row]");
   const promoDiscountValue = document.querySelector("[data-promo-discount]");
   const removePromoButton = document.querySelector("[data-remove-custom-promo]");
-  const totalValue = document.querySelector("[data-cart-total]");
 
   if (!orderList) {
     return;
@@ -1746,15 +2634,15 @@ const renderCustomizationOrdersInCart = (options = {}) => {
       };
 
   const discountAmount = promoResult.isValid ? promoResult.discountAmount : 0;
-  const totalAmount = Math.max(0, subtotalAmount - discountAmount);
 
   if (subtotalValue) {
     subtotalValue.textContent = formatUsdCurrency(subtotalAmount);
   }
 
-  if (totalValue) {
-    totalValue.textContent = formatUsdCurrency(totalAmount);
-  }
+  updateCartSummaryTotals({
+    customizationSubtotal: subtotalAmount,
+    discountAmount,
+  });
 
   if (promoInput instanceof HTMLInputElement) {
     promoInput.value = promoCode;
@@ -2880,5 +3768,12 @@ const attachCartCustomizationActions = () => {
 };
 
 initializeCustomizationStudios();
+attachCartSavedItemsActions();
 attachCartCustomizationActions();
+renderCartAndSavedItemsInCartPage();
 renderCustomizationOrdersInCart();
+
+window.addEventListener(SHOPPING_STATE_EVENT, () => {
+  renderCartAndSavedItemsInCartPage();
+  renderCustomizationOrdersInCart();
+});

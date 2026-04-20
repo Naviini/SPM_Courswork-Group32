@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Compare Products | Nexium</title>
+  <title>Saved Items | Nexium</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="compare-products.css">
 </head>
-<body class="home-page compare-page">
+<body class="home-page cart-page">
   <header class="home-header">
     <div class="home-utility">
       <div class="shell utility-inner">
@@ -89,81 +88,24 @@
     </div>
   </header>
 
-  <main class="home-main compare-main">
-    <section class="compare-shell">
-      <div class="compare-title-row">
-        <a href="all-cell-phones.html" class="back-link">Back To Products</a>
-        <button type="button" class="print-link" id="printCompareButton">Print</button>
+  <main class="home-main">
+    <section class="shell cart-section" id="saved-items-section">
+      <div class="cart-main-col">
+        <h2>Your saved items</h2>
+        <p>Products you save from around the site appear here.</p>
+
+        <article class="cart-saved-box">
+          <div class="cart-saved-head">
+            <h3>Saved Items <small data-saved-items-count>(0)</small></h3>
+            <span aria-hidden="true">⌃</span>
+          </div>
+          <div class="cart-saved-empty" data-saved-items-empty>
+            <h4>Your list is currently empty</h4>
+            <p>Browse items and tap the heart icon to save products for later.</p>
+          </div>
+          <div class="cart-saved-list" data-saved-items-list></div>
+        </article>
       </div>
-
-      <h1>Compare Products</h1>
-
-      <div id="comparePageEmptyState" class="compare-empty is-hidden" role="status" aria-live="polite">
-        <h2>Select at least 2 products to compare</h2>
-        <p>Go back to the catalog page, choose products, and click Compare.</p>
-        <a href="all-cell-phones.html" class="back-to-catalog">Back to All Cell Phones</a>
-      </div>
-
-      <section id="compareContent" class="compare-content">
-        <div class="compare-products-grid" id="compareProductsGrid" aria-label="Compared products"></div>
-
-        <section class="compare-section" data-section>
-          <button type="button" class="section-toggle" data-toggle-section="specsPanel" aria-expanded="true">
-            <span>All Specs</span>
-            <span class="section-caret" aria-hidden="true"></span>
-          </button>
-
-          <div class="section-panel" id="specsPanel">
-            <label class="difference-toggle" for="highlightDifferences">
-              <input type="checkbox" id="highlightDifferences">
-              <span>Highlight differences</span>
-            </label>
-
-            <div class="subheading-row">
-              <h2>Key Specs</h2>
-              <span>What do the dashes mean?</span>
-            </div>
-
-            <div id="specRows" class="spec-rows"></div>
-
-            <div class="spec-actions">
-              <button type="button" id="toggleMoreSpecsButton">Show More Specs</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="compare-section" data-section>
-          <button type="button" class="section-toggle" data-toggle-section="reviewsPanel" aria-expanded="true">
-            <span>Reviews &amp; Ratings</span>
-            <span class="section-caret" aria-hidden="true"></span>
-          </button>
-
-          <div class="section-panel" id="reviewsPanel">
-            <div class="metric-label">Customer Ratings</div>
-            <div id="ratingsGrid" class="metric-grid"></div>
-
-            <div class="metric-label">Customer Images</div>
-            <div id="imagesGrid" class="metric-grid images-grid"></div>
-
-            <div class="metric-label">What People Are Saying</div>
-            <div id="prosGrid" class="metric-grid"></div>
-
-            <div class="metric-label">Cons</div>
-            <div id="consGrid" class="metric-grid"></div>
-          </div>
-        </section>
-
-        <section class="compare-section" data-section>
-          <button type="button" class="section-toggle" data-toggle-section="availabilityPanel" aria-expanded="true">
-            <span>Availability</span>
-            <span class="section-caret" aria-hidden="true"></span>
-          </button>
-
-          <div class="section-panel" id="availabilityPanel">
-            <div id="availabilityGrid" class="metric-grid availability-grid"></div>
-          </div>
-        </section>
-      </section>
     </section>
   </main>
 
@@ -252,6 +194,5 @@
   </footer>
 
   <script src="script.js"></script>
-  <script src="compare-products.js"></script>
 </body>
 </html>
