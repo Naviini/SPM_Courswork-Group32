@@ -16,6 +16,9 @@ const CUSTOMIZATION_PROMO_STORAGE_KEY = "nexiumCustomizationPromo";
 const SAVED_ITEMS_STORAGE_KEY = "nexiumSavedItems";
 const CART_ITEMS_STORAGE_KEY = "nexiumCartItems";
 const SHOPPING_STATE_EVENT = "nexium:shopping-state-updated";
+const AUTH_USERS_STORAGE_KEY = "nexiumAuthUsers";
+const AUTH_SESSION_STORAGE_KEY = "nexiumAuthSession";
+const AUTH_STATE_EVENT = "nexium:auth-state-updated";
 const MAX_STICKERS_PER_DESIGN = 6;
 const MIN_STICKER_SIZE = 24;
 const MAX_STICKER_SIZE = 56;
@@ -1127,7 +1130,7 @@ const getStoredProductFromCartRecommendation = (card) => {
     id: name,
     name,
     subtitle: "Recommended item",
-    price: parseProductPrice(card.querySelector("strong")?.textContent || "0", 0),
+    price: parseProductPrice(card.dataset.productPrice || card.querySelector("strong")?.textContent || "0", 0),
     image:
       card.querySelector("img")?.getAttribute("src") ||
       extractBackgroundImageUrl(card.querySelector(".cart-product-art")) ||
@@ -1193,33 +1196,910 @@ const initializeProductDetailsActions = () => {
   });
 };
 
-const initializeCartRecommendationButtons = () => {
-  document.querySelectorAll(".cart-product-card button").forEach((button) => {
-    if (button.classList.contains("cart-next")) {
-      return;
-    }
+const CART_RECOMMENDATIONS_PER_PAGE = 4;
+const cartRecommendations = [
+  {
+    id: "airpods-pro-3",
+    name: "Apple - AirPods Pro 3, Wireless Active Noise Cancelling Earbuds",
+    price: 199.99,
+    comparePrice: 249.99,
+    rating: 4.9,
+    reviews: 7906,
+    tag: "Ultimate Deal",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: true,
+  },
+  {
+    id: "airpods-4",
+    name: "Apple - AirPods 4 - White",
+    price: 121,
+    comparePrice: 129.99,
+    rating: 4.8,
+    reviews: 9320,
+    tag: "",
+    image: "assets/assets2/Apple.png",
+    inStock: false,
+  },
+  {
+    id: "airpods-4-anc",
+    name: "Apple - AirPods 4 with Active Noise Cancellation - White",
+    price: 164.7,
+    comparePrice: 179.99,
+    rating: 4.7,
+    reviews: 6049,
+    tag: "",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: false,
+  },
+  {
+    id: "jbl-tune-245nc",
+    name: "JBL - Tune 245NC True Wireless Noise Cancelling Earbud",
+    price: 59.95,
+    comparePrice: 109.95,
+    rating: 4.6,
+    reviews: 723,
+    tag: "Ultimate Deal",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: true,
+  },
+  {
+    id: "samsung-buds-pro",
+    name: "Samsung - Galaxy Buds Pro Wireless Earbuds",
+    price: 149.99,
+    comparePrice: 199.99,
+    rating: 4.7,
+    reviews: 4412,
+    tag: "Member Offer",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: true,
+  },
+  {
+    id: "pixel-buds-pro",
+    name: "Google - Pixel Buds Pro 2",
+    price: 179.99,
+    comparePrice: 229.99,
+    rating: 4.5,
+    reviews: 2619,
+    tag: "Limited Time",
+    image: "assets/assets2/google-pixel-c2.jpg",
+    inStock: true,
+  },
+  {
+    id: "beats-studio-buds",
+    name: "Beats - Studio Buds +",
+    price: 139.99,
+    comparePrice: 169.99,
+    rating: 4.4,
+    reviews: 1872,
+    tag: "Top Rated",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: true,
+  },
+  {
+    id: "anker-soundcore-p40i",
+    name: "Anker - Soundcore P40i Noise Cancelling Earbuds",
+    price: 79.99,
+    comparePrice: 99.99,
+    rating: 4.3,
+    reviews: 935,
+    tag: "Budget Pick",
+    image: "assets/assets2/Headphones.jpeg",
+    inStock: true,
+  },
+];
 
-    if (!/add\s+to\s+cart/i.test(button.textContent || "")) {
-      return;
-    }
+let cartRecommendationPageIndex = 0;
 
-    if (button.dataset.cartBound === "true") {
-      return;
-    }
+const escapeRecommendationHtml = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
 
-    const card = button.closest(".cart-product-card");
-    const product = getStoredProductFromCartRecommendation(card);
-    if (!product) {
-      return;
-    }
-
-    button.dataset.cartBound = "true";
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      addProductToCart(product, 1);
-      showCartButtonFeedback(button);
-    });
+    return entities[character] || character;
   });
+
+const formatRecommendationPrice = (value) => `$${parseProductPrice(value, 0).toFixed(2)}`;
+
+const buildRecommendationStars = (ratingValue) => {
+  const rounded = Math.max(0, Math.min(5, Math.round(Number(ratingValue) || 0)));
+  return `${"★".repeat(rounded)}${"☆".repeat(Math.max(0, 5 - rounded))}`;
+};
+
+const renderCartRecommendations = (row) => {
+  if (!row) {
+    return;
+  }
+
+  if (!cartRecommendations.length) {
+    row.innerHTML = '<p class="cart-recommend-empty">No recommendations available right now.</p>';
+    return;
+  }
+
+  const pageCount = Math.max(1, Math.ceil(cartRecommendations.length / CART_RECOMMENDATIONS_PER_PAGE));
+  cartRecommendationPageIndex = ((cartRecommendationPageIndex % pageCount) + pageCount) % pageCount;
+
+  const startIndex = cartRecommendationPageIndex * CART_RECOMMENDATIONS_PER_PAGE;
+  const visibleRecommendations = cartRecommendations.slice(startIndex, startIndex + CART_RECOMMENDATIONS_PER_PAGE);
+
+  row.innerHTML = visibleRecommendations
+    .map((item, index) => {
+      const tagMarkup = item.tag ? `<small>${escapeRecommendationHtml(item.tag)}</small>` : "";
+      const comparePriceMarkup = item.comparePrice
+        ? `<span>${formatRecommendationPrice(item.comparePrice)}</span>`
+        : "";
+      const actionMarkup = item.inStock
+        ? `<button type="button" data-recommend-action="add-to-cart">Add to cart</button>`
+        : '<div class="cart-sold">Sold Out</div>';
+      const nextButtonMarkup =
+        index === visibleRecommendations.length - 1 && pageCount > 1
+          ? '<button class="cart-next" type="button" data-recommend-action="next-page" aria-label="View more recommendations">›</button>'
+          : "";
+
+      return `
+        <article class="cart-product-card" data-product-id="${escapeRecommendationHtml(item.id)}" data-product-price="${parseProductPrice(item.price, 0).toFixed(2)}">
+          <div class="cart-product-art">
+            <img src="${escapeRecommendationHtml(item.image)}" alt="${escapeRecommendationHtml(item.name)}">
+          </div>
+          <p>${escapeRecommendationHtml(item.name)}</p>
+          <div class="cart-rating">${buildRecommendationStars(item.rating)} <span>(${Number(item.reviews || 0).toLocaleString("en-US")})</span></div>
+          ${tagMarkup}
+          <strong>${formatRecommendationPrice(item.price)} ${comparePriceMarkup}</strong>
+          ${actionMarkup}
+          ${nextButtonMarkup}
+        </article>
+      `;
+    })
+    .join("");
+};
+
+const initializeCartRecommendationButtons = () => {
+  const recommendationRow = document.querySelector("[data-cart-recommendations-row]");
+  if (!recommendationRow) {
+    return;
+  }
+
+  if (recommendationRow.dataset.recommendationsBound !== "true") {
+    recommendationRow.dataset.recommendationsBound = "true";
+    recommendationRow.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const actionButton = target.closest("[data-recommend-action]");
+      if (!actionButton) {
+        return;
+      }
+
+      const action = actionButton.getAttribute("data-recommend-action");
+      if (!action) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (action === "next-page") {
+        cartRecommendationPageIndex += 1;
+        renderCartRecommendations(recommendationRow);
+        return;
+      }
+
+      if (action !== "add-to-cart") {
+        return;
+      }
+
+      const card = actionButton.closest(".cart-product-card");
+      const product = getStoredProductFromCartRecommendation(card);
+      if (!product) {
+        return;
+      }
+
+      addProductToCart(product, 1);
+      showCartButtonFeedback(actionButton);
+    });
+  }
+
+  renderCartRecommendations(recommendationRow);
+};
+
+const AUTH_TRIGGER_SELECTOR = ".signin-link, .signin-promo-btn, [data-cart-empty-copy] a, [data-auth-quick-link]";
+let authModalMode = "signin";
+
+const normalizeAuthSession = (rawSession) => {
+  const email = sanitizeProductText(rawSession?.email, "").toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return null;
+  }
+
+  const fallbackName = email.split("@")[0] || "Nexium Member";
+  const name = sanitizeProductText(rawSession?.name, fallbackName);
+  const signedInAt = sanitizeProductText(rawSession?.signedInAt, new Date().toISOString());
+
+  return {
+    name,
+    email,
+    signedInAt,
+  };
+};
+
+const AUTH_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const encodeAuthPassword = (passwordValue) => {
+  const normalizedPassword = String(passwordValue || "").trim();
+
+  try {
+    return btoa(unescape(encodeURIComponent(normalizedPassword)));
+  } catch {
+    return normalizedPassword;
+  }
+};
+
+const normalizeAuthUser = (rawUser) => {
+  const email = sanitizeProductText(rawUser?.email, "").toLowerCase();
+  if (!AUTH_EMAIL_PATTERN.test(email)) {
+    return null;
+  }
+
+  const passwordHash = sanitizeProductText(rawUser?.passwordHash, "");
+  if (!passwordHash) {
+    return null;
+  }
+
+  const fallbackName = email.split("@")[0] || "Nexium Member";
+  const name = sanitizeProductText(rawUser?.name, fallbackName);
+
+  return {
+    id: sanitizeProductText(rawUser?.id, slugifyProductId(`${email}-auth-user`)),
+    name,
+    email,
+    passwordHash,
+    createdAt: sanitizeProductText(rawUser?.createdAt, new Date().toISOString()),
+  };
+};
+
+const readAuthUsers = () => {
+  try {
+    const rawValue = localStorage.getItem(AUTH_USERS_STORAGE_KEY);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedUsers = JSON.parse(rawValue);
+    if (!Array.isArray(parsedUsers)) {
+      return [];
+    }
+
+    return parsedUsers
+      .map((user) => normalizeAuthUser(user))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+const writeAuthUsers = (users) => {
+  try {
+    const normalizedUsers = users
+      .map((user) => normalizeAuthUser(user))
+      .filter(Boolean);
+
+    localStorage.setItem(AUTH_USERS_STORAGE_KEY, JSON.stringify(normalizedUsers));
+  } catch {
+    // Ignore storage errors in restricted contexts.
+  }
+};
+
+const registerAuthUser = ({ name, email, password }) => {
+  const normalizedName = sanitizeProductText(name, "");
+  const normalizedEmail = sanitizeProductText(email, "").toLowerCase();
+  const normalizedPassword = String(password || "").trim();
+
+  if (!normalizedName) {
+    return {
+      ok: false,
+      message: "Enter your full name to create an account.",
+    };
+  }
+
+  if (!AUTH_EMAIL_PATTERN.test(normalizedEmail)) {
+    return {
+      ok: false,
+      message: "Enter a valid email address.",
+    };
+  }
+
+  if (normalizedPassword.length < 6) {
+    return {
+      ok: false,
+      message: "Password must be at least 6 characters.",
+    };
+  }
+
+  const existingUsers = readAuthUsers();
+  if (existingUsers.some((user) => user.email === normalizedEmail)) {
+    return {
+      ok: false,
+      message: "An account already exists with this email. Please sign in.",
+    };
+  }
+
+  const registeredUser = normalizeAuthUser({
+    id: slugifyProductId(`${normalizedEmail}-${Date.now()}`),
+    name: normalizedName,
+    email: normalizedEmail,
+    passwordHash: encodeAuthPassword(normalizedPassword),
+    createdAt: new Date().toISOString(),
+  });
+
+  if (!registeredUser) {
+    return {
+      ok: false,
+      message: "Unable to register this account right now.",
+    };
+  }
+
+  existingUsers.unshift(registeredUser);
+  writeAuthUsers(existingUsers);
+
+  return {
+    ok: true,
+    user: {
+      id: registeredUser.id,
+      name: registeredUser.name,
+      email: registeredUser.email,
+      createdAt: registeredUser.createdAt,
+    },
+  };
+};
+
+const authenticateAuthUser = ({ email, password }) => {
+  const normalizedEmail = sanitizeProductText(email, "").toLowerCase();
+  const normalizedPassword = String(password || "").trim();
+
+  if (!AUTH_EMAIL_PATTERN.test(normalizedEmail)) {
+    return {
+      ok: false,
+      message: "Enter a valid email address.",
+    };
+  }
+
+  if (!normalizedPassword) {
+    return {
+      ok: false,
+      message: "Enter your password to sign in.",
+    };
+  }
+
+  const existingUser = readAuthUsers().find((user) => user.email === normalizedEmail);
+  if (!existingUser) {
+    return {
+      ok: false,
+      message: "No account found for this email. Create an account first.",
+    };
+  }
+
+  if (existingUser.passwordHash !== encodeAuthPassword(normalizedPassword)) {
+    return {
+      ok: false,
+      message: "Incorrect password. Please try again.",
+    };
+  }
+
+  return {
+    ok: true,
+    user: {
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email,
+      createdAt: existingUser.createdAt,
+    },
+  };
+};
+
+const readAuthSession = () => {
+  try {
+    const rawValue = localStorage.getItem(AUTH_SESSION_STORAGE_KEY);
+    if (!rawValue) {
+      return null;
+    }
+
+    return normalizeAuthSession(JSON.parse(rawValue));
+  } catch {
+    return null;
+  }
+};
+
+const writeAuthSession = (session) => {
+  try {
+    if (!session) {
+      localStorage.removeItem(AUTH_SESSION_STORAGE_KEY);
+      return;
+    }
+
+    localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(session));
+  } catch {
+    // Ignore storage errors in restricted contexts.
+  }
+};
+
+const getAuthSession = () => readAuthSession();
+
+const getAuthDisplayName = (session) => sanitizeProductText(session?.name, "Nexium Member");
+
+const emitAuthStateChanged = () => {
+  window.dispatchEvent(
+    new CustomEvent(AUTH_STATE_EVENT, {
+      detail: {
+        session: getAuthSession(),
+      },
+    })
+  );
+};
+
+const signInAuthSession = ({ name, email }) => {
+  const normalizedSession = normalizeAuthSession({
+    name,
+    email,
+    signedInAt: new Date().toISOString(),
+  });
+
+  if (!normalizedSession) {
+    return null;
+  }
+
+  writeAuthSession(normalizedSession);
+  emitAuthStateChanged();
+  return normalizedSession;
+};
+
+const signOutAuthSession = () => {
+  writeAuthSession(null);
+  emitAuthStateChanged();
+};
+
+window.NexiumAuthState = {
+  eventName: AUTH_STATE_EVENT,
+  getSession: getAuthSession,
+  isSignedIn: () => Boolean(getAuthSession()),
+  registerUser: registerAuthUser,
+  authenticateUser: authenticateAuthUser,
+  signIn: signInAuthSession,
+  signOut: signOutAuthSession,
+};
+
+const ensureAuthQuickActionLinks = () => {
+  document.querySelectorAll(".quick-actions").forEach((quickActionsContainer) => {
+    if (quickActionsContainer.querySelector("[data-auth-quick-link]")) {
+      return;
+    }
+
+    const quickAuthLink = document.createElement("a");
+    quickAuthLink.href = "#";
+    quickAuthLink.className = "quick-action-link auth-quick-link";
+    quickAuthLink.setAttribute("aria-label", "Open account dialog");
+    quickAuthLink.setAttribute("data-auth-quick-link", "true");
+    quickAuthLink.innerHTML = `
+      <span class="quick-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" focusable="false">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+          <path d="M4.5 20a7.5 7.5 0 0 1 15 0"></path>
+        </svg>
+      </span>
+      <span class="quick-action-copy">
+        <span data-auth-quick-label>Sign in</span>
+        <small data-auth-quick-subcopy>Sign in / Sign out</small>
+      </span>
+    `;
+
+    quickActionsContainer.append(quickAuthLink);
+  });
+};
+
+const ensureAuthModal = () => {
+  if (document.querySelector("[data-auth-modal-overlay]")) {
+    return;
+  }
+
+  const authOverlay = document.createElement("div");
+  authOverlay.className = "auth-modal-overlay is-hidden";
+  authOverlay.setAttribute("data-auth-modal-overlay", "true");
+  authOverlay.innerHTML = `
+    <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <button type="button" class="auth-modal-close" data-auth-close aria-label="Close account dialog">×</button>
+      <h2 id="authModalTitle" class="auth-modal-title" data-auth-modal-title>Sign in to Nexium</h2>
+      <p class="auth-modal-copy" data-auth-modal-copy>Sign in to save items, track your orders, and check out faster.</p>
+      <form class="auth-form" data-auth-form novalidate>
+        <label class="auth-field" data-auth-name-field>
+          <span>Name</span>
+          <input type="text" name="name" autocomplete="name" maxlength="50" required>
+        </label>
+        <label class="auth-field">
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <input type="password" name="password" autocomplete="current-password" minlength="6" required>
+        </label>
+        <button type="submit" class="auth-modal-submit" data-auth-submit>Sign in</button>
+      </form>
+      <p class="auth-modal-switch-row" data-auth-switch-row>
+        <button type="button" class="auth-mode-switch" data-auth-switch-mode>Need an account? Create one</button>
+      </p>
+      <section class="auth-account-panel" data-auth-account-panel hidden>
+        <p class="auth-account-name" data-auth-account-name></p>
+        <p class="auth-account-email" data-auth-account-email></p>
+        <button type="button" class="auth-modal-signout" data-auth-signout>Sign out</button>
+      </section>
+      <p class="auth-modal-feedback" data-auth-feedback aria-live="polite"></p>
+    </div>
+  `;
+
+  document.body.append(authOverlay);
+};
+
+const setAuthModalFeedback = (message, tone = "") => {
+  const feedbackElement = document.querySelector("[data-auth-feedback]");
+  if (!feedbackElement) {
+    return;
+  }
+
+  feedbackElement.textContent = message;
+  feedbackElement.classList.remove("is-error", "is-success");
+
+  if (tone === "error") {
+    feedbackElement.classList.add("is-error");
+  }
+
+  if (tone === "success") {
+    feedbackElement.classList.add("is-success");
+  }
+};
+
+const closeAuthModal = () => {
+  const authOverlay = document.querySelector("[data-auth-modal-overlay]");
+  if (!authOverlay) {
+    return;
+  }
+
+  authOverlay.classList.add("is-hidden");
+  document.body.classList.remove("auth-modal-open");
+  setAuthModalFeedback("");
+};
+
+const renderAuthModal = () => {
+  const authOverlay = document.querySelector("[data-auth-modal-overlay]");
+  if (!authOverlay) {
+    return;
+  }
+
+  const authSession = getAuthSession();
+  const titleElement = authOverlay.querySelector("[data-auth-modal-title]");
+  const copyElement = authOverlay.querySelector("[data-auth-modal-copy]");
+  const authForm = authOverlay.querySelector("[data-auth-form]");
+  const submitButton = authOverlay.querySelector("[data-auth-submit]");
+  const accountPanel = authOverlay.querySelector("[data-auth-account-panel]");
+  const accountName = authOverlay.querySelector("[data-auth-account-name]");
+  const accountEmail = authOverlay.querySelector("[data-auth-account-email]");
+  const nameField = authOverlay.querySelector("[data-auth-name-field]");
+  const nameInput = authOverlay.querySelector("input[name='name']");
+  const emailInput = authOverlay.querySelector("input[name='email']");
+  const passwordInput = authOverlay.querySelector("input[name='password']");
+  const switchRow = authOverlay.querySelector("[data-auth-switch-row]");
+  const switchModeButton = authOverlay.querySelector("[data-auth-switch-mode]");
+
+  if (!titleElement || !copyElement || !authForm || !submitButton || !accountPanel || !accountName || !accountEmail) {
+    return;
+  }
+
+  if (authSession) {
+    titleElement.textContent = "Account";
+    copyElement.textContent = "You are currently signed in.";
+    accountName.textContent = getAuthDisplayName(authSession);
+    accountEmail.textContent = authSession.email;
+    authForm.hidden = true;
+    accountPanel.hidden = false;
+
+    if (switchRow instanceof HTMLElement) {
+      switchRow.hidden = true;
+    }
+
+    return;
+  }
+
+  const isSignUp = authModalMode === "signup";
+
+  titleElement.textContent = isSignUp ? "Create account" : "Sign in to Nexium";
+  copyElement.textContent =
+    isSignUp
+      ? "Create your Nexium account to save favorites and track every order."
+      : "Sign in to save items, track your orders, and check out faster.";
+  submitButton.textContent = isSignUp ? "Create account" : "Sign in";
+  authForm.hidden = false;
+  accountPanel.hidden = true;
+
+  if (nameField instanceof HTMLElement) {
+    nameField.hidden = !isSignUp;
+  }
+
+  if (nameInput instanceof HTMLInputElement) {
+    nameInput.required = isSignUp;
+    if (!isSignUp) {
+      nameInput.value = "";
+    }
+  }
+
+  if (emailInput instanceof HTMLInputElement) {
+    emailInput.autocomplete = "email";
+  }
+
+  if (passwordInput instanceof HTMLInputElement) {
+    passwordInput.autocomplete = isSignUp ? "new-password" : "current-password";
+  }
+
+  if (switchRow instanceof HTMLElement) {
+    switchRow.hidden = false;
+  }
+
+  if (switchModeButton instanceof HTMLElement) {
+    switchModeButton.textContent = isSignUp
+      ? "Already have an account? Sign in"
+      : "Need an account? Create one";
+  }
+};
+
+const openAuthModal = (mode = "signin") => {
+  authModalMode = mode === "signup" ? "signup" : "signin";
+  ensureAuthModal();
+  renderAuthModal();
+
+  const authOverlay = document.querySelector("[data-auth-modal-overlay]");
+  if (!authOverlay) {
+    return;
+  }
+
+  authOverlay.classList.remove("is-hidden");
+  document.body.classList.add("auth-modal-open");
+  setAuthModalFeedback("");
+
+  const authSession = getAuthSession();
+  const focusTarget = authSession
+    ? authOverlay.querySelector("[data-auth-signout]")
+    : authOverlay.querySelector(authModalMode === "signup" ? "input[name='name']" : "input[name='email']");
+
+  window.requestAnimationFrame(() => {
+    if (focusTarget instanceof HTMLElement) {
+      focusTarget.focus();
+    }
+  });
+};
+
+const renderAuthUi = () => {
+  ensureAuthQuickActionLinks();
+
+  const authSession = getAuthSession();
+  const displayName = getAuthDisplayName(authSession);
+  const firstName = displayName.split(" ")[0] || displayName;
+
+  document.querySelectorAll(".signin-link").forEach((authLink) => {
+    if (!authLink.dataset.defaultAuthText) {
+      authLink.dataset.defaultAuthText = authLink.textContent?.trim() || "Sign in or Create Account";
+    }
+
+    authLink.textContent = authSession ? `My account (${firstName})` : authLink.dataset.defaultAuthText;
+    authLink.dataset.authIntent = authSession ? "account" : "signin";
+  });
+
+  document.querySelectorAll(".signin-promo-btn-primary").forEach((button) => {
+    if (!button.dataset.defaultAuthText) {
+      button.dataset.defaultAuthText = button.textContent?.trim() || "Sign in";
+    }
+
+    button.textContent = authSession ? `My account (${firstName})` : button.dataset.defaultAuthText;
+    button.dataset.authIntent = authSession ? "account" : "signin";
+  });
+
+  document.querySelectorAll(".signin-promo-btn-secondary").forEach((button) => {
+    if (!button.dataset.defaultAuthText) {
+      button.dataset.defaultAuthText = button.textContent?.trim() || "Create an account";
+    }
+
+    button.textContent = authSession ? "Sign out" : button.dataset.defaultAuthText;
+    button.dataset.authIntent = authSession ? "signout" : "signup";
+  });
+
+  document.querySelectorAll("[data-cart-empty-copy] a").forEach((authLink) => {
+    if (!authLink.dataset.defaultAuthText) {
+      authLink.dataset.defaultAuthText = authLink.textContent?.trim() || "Sign in to see your cart";
+    }
+
+    authLink.textContent = authSession ? `Signed in as ${authSession.email}` : authLink.dataset.defaultAuthText;
+    authLink.dataset.authIntent = authSession ? "account" : "signin";
+  });
+
+  document.querySelectorAll("[data-auth-quick-link]").forEach((authQuickLink) => {
+    const quickLabel = authQuickLink.querySelector("[data-auth-quick-label]");
+    const quickSubCopy = authQuickLink.querySelector("[data-auth-quick-subcopy]");
+
+    if (quickLabel) {
+      quickLabel.textContent = authSession ? "Account" : "Sign in";
+    }
+
+    if (quickSubCopy) {
+      quickSubCopy.textContent = authSession ? `Hi, ${firstName}` : "Sign in / Sign out";
+    }
+
+    authQuickLink.dataset.authIntent = authSession ? "account" : "signin";
+  });
+
+  renderAuthModal();
+};
+
+const initializeAuthProcess = () => {
+  ensureAuthQuickActionLinks();
+  ensureAuthModal();
+
+  const authOverlay = document.querySelector("[data-auth-modal-overlay]");
+  if (authOverlay && authOverlay.dataset.authBound !== "true") {
+    authOverlay.dataset.authBound = "true";
+
+    authOverlay.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (target === authOverlay || target.closest("[data-auth-close]")) {
+        closeAuthModal();
+      }
+    });
+
+    const authForm = authOverlay.querySelector("[data-auth-form]");
+    authForm?.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(authForm);
+      const name = sanitizeProductText(formData.get("name"), "");
+      const email = sanitizeProductText(formData.get("email"), "");
+      const password = String(formData.get("password") || "").trim();
+
+      if (!email || !password) {
+        setAuthModalFeedback("Please enter your email and password.", "error");
+        return;
+      }
+
+      if (!AUTH_EMAIL_PATTERN.test(email.toLowerCase())) {
+        setAuthModalFeedback("Enter a valid email address.", "error");
+        return;
+      }
+
+      if (password.length < 6) {
+        setAuthModalFeedback("Password must be at least 6 characters.", "error");
+        return;
+      }
+
+      if (authModalMode === "signup") {
+        const registerResult = registerAuthUser({
+          name,
+          email,
+          password,
+        });
+
+        if (!registerResult.ok || !registerResult.user) {
+          setAuthModalFeedback(registerResult.message || "Unable to create account.", "error");
+          return;
+        }
+
+        const signedInSession = signInAuthSession({
+          name: registerResult.user.name,
+          email: registerResult.user.email,
+        });
+
+        if (!signedInSession) {
+          setAuthModalFeedback("Account created, but sign in failed. Please try again.", "error");
+          return;
+        }
+
+        setAuthModalFeedback("Account created. You are now signed in.", "success");
+      } else {
+        const authResult = authenticateAuthUser({
+          email,
+          password,
+        });
+
+        if (!authResult.ok || !authResult.user) {
+          setAuthModalFeedback(authResult.message || "Unable to sign in.", "error");
+          return;
+        }
+
+        const signedInSession = signInAuthSession({
+          name: authResult.user.name,
+          email: authResult.user.email,
+        });
+
+        if (!signedInSession) {
+          setAuthModalFeedback("Unable to sign in right now. Please try again.", "error");
+          return;
+        }
+
+        setAuthModalFeedback("Signed in successfully.", "success");
+      }
+
+      renderAuthUi();
+      authForm.reset();
+
+      window.setTimeout(() => {
+        closeAuthModal();
+      }, 240);
+    });
+
+    const switchModeButton = authOverlay.querySelector("[data-auth-switch-mode]");
+    switchModeButton?.addEventListener("click", () => {
+      authModalMode = authModalMode === "signup" ? "signin" : "signup";
+      setAuthModalFeedback("");
+      renderAuthModal();
+
+      const focusTarget = authOverlay.querySelector(
+        authModalMode === "signup" ? "input[name='name']" : "input[name='email']"
+      );
+
+      if (focusTarget instanceof HTMLElement) {
+        focusTarget.focus();
+      }
+    });
+
+    const signOutButton = authOverlay.querySelector("[data-auth-signout]");
+    signOutButton?.addEventListener("click", () => {
+      signOutAuthSession();
+      closeAuthModal();
+    });
+  }
+
+  if (document.body.dataset.authTriggersBound !== "true") {
+    document.body.dataset.authTriggersBound = "true";
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const authTrigger = target.closest(AUTH_TRIGGER_SELECTOR);
+      if (!authTrigger) {
+        return;
+      }
+
+      event.preventDefault();
+      const intent = authTrigger.getAttribute("data-auth-intent") || "signin";
+
+      if (intent === "signout") {
+        signOutAuthSession();
+        return;
+      }
+
+      openAuthModal(intent === "signup" ? "signup" : "signin");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      const visibleOverlay = document.querySelector("[data-auth-modal-overlay]:not(.is-hidden)");
+      if (!visibleOverlay) {
+        return;
+      }
+
+      closeAuthModal();
+    });
+  }
+
+  renderAuthUi();
 };
 
 const initializeHomepageProductNavigation = () => {
@@ -1300,10 +2180,22 @@ initializeHomepageProductNavigation();
 initializeRetailWishlistButtons();
 initializeProductDetailsActions();
 initializeCartRecommendationButtons();
+initializeAuthProcess();
 
 window.addEventListener(SHOPPING_STATE_EVENT, () => {
   initializeRetailWishlistButtons();
   initializeProductDetailsActions();
+  renderAuthUi();
+});
+
+window.addEventListener(AUTH_STATE_EVENT, () => {
+  renderAuthUi();
+});
+
+window.addEventListener("storage", (event) => {
+  if (event.key === AUTH_SESSION_STORAGE_KEY) {
+    renderAuthUi();
+  }
 });
 
 compareButtons.forEach((button) => {

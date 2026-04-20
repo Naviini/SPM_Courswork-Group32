@@ -12,6 +12,10 @@ Nexium is a premium and sustainable e-commerce concept focused on brand-new mobi
 - `docs/solution-architecture.md` - solution architecture report
 - `docs/release-plan.md` - phased release plan report
 - `docs/ui-ux-design-specification.md` - UI/UX specification report
+- `docs/figma/figma-wireframe-implementation.md` - implementation guide for Figma wireframe build
+- `docs/figma/figma-click-map.csv` - screen-by-screen interaction map for one-pass wiring
+- `docs/figma/figma-prototype-variables.json` - shared prototype variables and defaults
+- `docs/figma/figma-wireframe-qa-checklist.md` - QA checklist for prototype verification
 
 ## How To View
 
