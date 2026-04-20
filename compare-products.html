@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Products | Nexium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="compare-products.css">
+</head>
+<body class="home-page compare-page">
+  <header class="home-header">
+    <div class="home-utility">
+      <div class="shell utility-inner">
+        <div class="utility-links">
+          <a href="#">Nexium Outlet</a>
+          <a href="#">Business Store</a>
+          <a href="#">Campus Deals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-primary">
+      <div class="shell primary-inner">
+        <a href="index.html" class="home-logo">
+          <span class="brand-mark">N</span>
+          <span class="logo-copy">
+            <strong>Nexium</strong>
+            <small>Premium tech</small>
+          </span>
+        </a>
+
+        <button class="menu-trigger" type="button">
+          <span class="menu-lines"></span>
+          <span>Menu</span>
+        </button>
+
+        <div class="home-search">
+          <input type="search" placeholder="Search Nexium phones, tablets, accessories">
+          <button type="button">⌕</button>
+        </div>
+
+        <div class="quick-actions">
+          <a href="store-locator.html" class="quick-action-link" aria-label="Find a store location">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 21s6-5.53 6-11a6 6 0 1 0-12 0c0 5.47 6 11 6 11Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+            </span>
+            <span class="quick-action-copy">
+              <span>Store Locator</span>
+              <small data-selected-branch>Colombo - Main Branch</small>
+            </span>
+          </a>
+          <a href="cart.html" class="quick-action-link" aria-label="Open cart page">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"></path>
+                <circle cx="10" cy="19" r="1.6"></circle>
+                <circle cx="17" cy="19" r="1.6"></circle>
+              </svg>
+            </span>
+            <span>Cart</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-secondary">
+      <div class="shell secondary-inner">
+        <nav class="secondary-links">
+          <a href="index.html#featured-offers">Top Deals</a>
+          <a href="index.html#featured-products">Featured Products</a>
+          <a href="index.html#advice">Discover</a>
+          <a href="index.html#preowned">Certified Pre-Owned</a>
+          <a href="index.html#accessories">Accessories</a>
+          <a href="customization-studio.html#customization-studio">Customization Studio</a>
+          <a href="index.html#catalog">Explore Items</a>
+        </nav>
+        <nav class="secondary-links secondary-links-right">
+          <a href="index.html#rewards">Rewards</a>
+          <a href="index.html#support">Order Status</a>
+          <a href="index.html#saved">Saved Items</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main compare-main">
+    <section class="compare-shell">
+      <div class="compare-title-row">
+        <a href="all-cell-phones.html" class="back-link">Back To Products</a>
+        <button type="button" class="print-link" id="printCompareButton">Print</button>
+      </div>
+
+      <h1>Compare Products</h1>
+
+      <div id="comparePageEmptyState" class="compare-empty is-hidden" role="status" aria-live="polite">
+        <h2>Select at least 2 products to compare</h2>
+        <p>Go back to the catalog page, choose products, and click Compare.</p>
+        <a href="all-cell-phones.html" class="back-to-catalog">Back to All Cell Phones</a>
+      </div>
+
+      <section id="compareContent" class="compare-content">
+        <div class="compare-products-grid" id="compareProductsGrid" aria-label="Compared products"></div>
+
+        <section class="compare-section" data-section>
+          <button type="button" class="section-toggle" data-toggle-section="specsPanel" aria-expanded="true">
+            <span>All Specs</span>
+            <span class="section-caret" aria-hidden="true"></span>
+          </button>
+
+          <div class="section-panel" id="specsPanel">
+            <label class="difference-toggle" for="highlightDifferences">
+              <input type="checkbox" id="highlightDifferences">
+              <span>Highlight differences</span>
+            </label>
+
+            <div class="subheading-row">
+              <h2>Key Specs</h2>
+              <span>What do the dashes mean?</span>
+            </div>
+
+            <div id="specRows" class="spec-rows"></div>
+
+            <div class="spec-actions">
+              <button type="button" id="toggleMoreSpecsButton">Show More Specs</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="compare-section" data-section>
+          <button type="button" class="section-toggle" data-toggle-section="reviewsPanel" aria-expanded="true">
+            <span>Reviews &amp; Ratings</span>
+            <span class="section-caret" aria-hidden="true"></span>
+          </button>
+
+          <div class="section-panel" id="reviewsPanel">
+            <div class="metric-label">Customer Ratings</div>
+            <div id="ratingsGrid" class="metric-grid"></div>
+
+            <div class="metric-label">Customer Images</div>
+            <div id="imagesGrid" class="metric-grid images-grid"></div>
+
+            <div class="metric-label">What People Are Saying</div>
+            <div id="prosGrid" class="metric-grid"></div>
+
+            <div class="metric-label">Cons</div>
+            <div id="consGrid" class="metric-grid"></div>
+          </div>
+        </section>
+
+        <section class="compare-section" data-section>
+          <button type="button" class="section-toggle" data-toggle-section="availabilityPanel" aria-expanded="true">
+            <span>Availability</span>
+            <span class="section-caret" aria-hidden="true"></span>
+          </button>
+
+          <div class="section-panel" id="availabilityPanel">
+            <div id="availabilityGrid" class="metric-grid availability-grid"></div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <footer class="home-footer" id="support">
+    <div class="shell footer-support-strip">
+      <article>
+        <div class="support-icon">?</div>
+        <a href="#">Visit our Support Center</a>
+      </article>
+      <article>
+        <div class="support-icon">□</div>
+        <a href="#">Check your Order Status</a>
+      </article>
+      <article>
+        <div class="support-icon">↔</div>
+        <a href="#">Shipping, Delivery &amp; Pickup</a>
+      </article>
+      <article>
+        <div class="support-icon">↺</div>
+        <a href="#">Returns &amp; Exchanges</a>
+      </article>
+      <article>
+        <div class="support-icon">$</div>
+        <a href="#">Price Match Guarantee</a>
+      </article>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="compare-products.js"></script>
+</body>
+</html>

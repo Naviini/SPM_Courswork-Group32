@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexium Cart | Your Shopping Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-page cart-page">
+  <header class="home-header">
+    <div class="home-utility">
+      <div class="shell utility-inner">
+        <div class="utility-links">
+          <a href="#">Nexium Outlet</a>
+          <a href="#">Business Store</a>
+          <a href="#">Campus Deals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-primary">
+      <div class="shell primary-inner">
+        <a href="index.html" class="home-logo">
+          <span class="brand-mark">N</span>
+          <span class="logo-copy">
+            <strong>Nexium</strong>
+            <small>Premium tech</small>
+          </span>
+        </a>
+
+        <button class="menu-trigger" type="button">
+          <span class="menu-lines"></span>
+          <span>Menu</span>
+        </button>
+
+        <div class="home-search">
+          <input type="search" placeholder="Search Nexium phones, tablets, accessories">
+          <button type="button">⌕</button>
+        </div>
+
+        <div class="quick-actions">
+          <a href="store-locator.html" class="quick-action-link" aria-label="Find a store location">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 21s6-5.53 6-11a6 6 0 1 0-12 0c0 5.47 6 11 6 11Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+            </span>
+            <span class="quick-action-copy">
+              <span>Store Locator</span>
+              <small data-selected-branch>Colombo - Main Branch</small>
+            </span>
+          </a>
+          <a href="cart.html" class="quick-action-link" aria-label="Open cart page">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"></path>
+                <circle cx="10" cy="19" r="1.6"></circle>
+                <circle cx="17" cy="19" r="1.6"></circle>
+              </svg>
+            </span>
+            <span>Cart</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-secondary">
+      <div class="shell secondary-inner">
+        <nav class="secondary-links">
+          <a href="index.html#featured-offers">Top Deals</a>
+          <a href="index.html#featured-products">Featured Products</a>
+          <a href="index.html#advice">Discover</a>
+          <a href="index.html#preowned">Certified Pre-Owned</a>
+          <a href="index.html#accessories">Accessories</a>
+          <a href="customization-studio.html#customization-studio">Customization Studio</a>
+          <a href="index.html#catalog">Explore Items</a>
+        </nav>
+        <nav class="secondary-links secondary-links-right">
+          <a href="index.html#rewards">Rewards</a>
+          <a href="index.html#support">Order Status</a>
+          <a href="index.html#saved">Saved Items</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <section class="shell cart-section" id="cart-section">
+      <div class="cart-layout">
+        <div class="cart-main-col">
+          <h2>Your cart is empty</h2>
+          <p>Have an account? <a href="#">Sign in to see your cart</a></p>
+
+          <article class="cart-saved-box">
+            <div class="cart-saved-head">
+              <h3>♡ Saved Items</h3>
+              <span aria-hidden="true">⌃</span>
+            </div>
+            <div class="cart-saved-empty">
+              <h4>Your list is currently empty</h4>
+              <p>Need inspiration? Check out <a href="#">recommended items</a>, or search for items to save.</p>
+            </div>
+          </article>
+
+          <article class="cart-custom-box">
+            <div class="cart-custom-head">
+              <h3>Customization Orders</h3>
+              <button type="button" class="cart-custom-clear" data-clear-custom-orders>Clear all</button>
+            </div>
+            <p class="cart-custom-empty" data-custom-orders-empty>No submitted custom designs yet. Use the Customization Studio on web or mobile to create one.</p>
+            <div class="cart-custom-list" data-custom-orders-list></div>
+          </article>
+
+          <div class="cart-spacer-box" aria-hidden="true"></div>
+
+          <article class="cart-recommended-box">
+            <h3>Recommended for you</h3>
+            <div class="cart-products-row">
+              <article class="cart-product-card">
+                <div class="cart-product-art cart-airpods-pro"></div>
+                <p>Apple - AirPods Pro 3, Wireless Active Noise Cancelling Earbuds...</p>
+                <div class="cart-rating">★★★★★ <span>(7,906)</span></div>
+                <small>Ultimate Deal</small>
+                <strong>$199.99 <span>$249.99</span></strong>
+                <button type="button">Add to cart</button>
+              </article>
+
+              <article class="cart-product-card">
+                <div class="cart-product-art cart-airpods-4"></div>
+                <p>Apple - AirPods 4 - White</p>
+                <div class="cart-rating">★★★★★ <span>(9,320)</span></div>
+                <strong>$121.00 <span>$129.99</span></strong>
+                <div class="cart-sold">Sold Out</div>
+              </article>
+
+              <article class="cart-product-card">
+                <div class="cart-product-art cart-airpods-anc"></div>
+                <p>Apple - AirPods 4 with Active Noise Cancellation - White</p>
+                <div class="cart-rating">★★★★★ <span>(6,049)</span></div>
+                <strong>$164.70 <span>$179.99</span></strong>
+                <div class="cart-sold">Sold Out</div>
+              </article>
+
+              <article class="cart-product-card cart-product-card-last">
+                <div class="cart-product-art cart-jbl"></div>
+                <p>JBL - Tune 245NC True Wireless Noise Cancelling Earbud</p>
+                <div class="cart-rating">★★★★★ <span>(723)</span></div>
+                <small>Ultimate Deal</small>
+                <strong>$59.95 <span>$109.95</span></strong>
+                <button type="button">Add to cart</button>
+                <button class="cart-next" type="button" aria-label="Scroll recommendations">›</button>
+              </article>
+            </div>
+          </article>
+        </div>
+
+        <aside class="cart-summary-col">
+          <h3>Order Summary</h3>
+          <div class="cart-summary-row cart-summary-row-subtotal">
+            <span>Customization Subtotal</span>
+            <strong data-customization-subtotal>$0.00</strong>
+          </div>
+          <div class="cart-promo-box">
+            <label for="cartPromoInput">Promo code</label>
+            <div class="cart-promo-row">
+              <input id="cartPromoInput" type="text" maxlength="20" placeholder="Enter promo code" data-custom-promo-input>
+              <button type="button" data-apply-custom-promo>Apply</button>
+            </div>
+            <button type="button" class="cart-promo-remove" data-remove-custom-promo hidden>Remove promo</button>
+            <p class="cart-promo-status" data-custom-promo-status aria-live="polite"></p>
+          </div>
+          <button type="button" class="cart-promo-help-toggle" data-promo-help-toggle aria-expanded="false" aria-controls="promoHelpDrawer">Promo Help</button>
+          <div id="promoHelpDrawer" class="cart-promo-help-drawer" data-promo-help-drawer hidden>
+            <p class="cart-promo-help-title">Active codes and terms</p>
+            <ul class="cart-promo-help-list" data-promo-help-list></ul>
+            <small>One promo code per order. Discounts apply to customization subtotal only.</small>
+          </div>
+          <div class="cart-summary-row cart-summary-row-discount" data-promo-discount-row hidden>
+            <span>Promo Discount</span>
+            <strong data-promo-discount>-$0.00</strong>
+          </div>
+          <div class="cart-summary-row">
+            <strong>Total</strong>
+            <strong data-cart-total>$0.00</strong>
+          </div>
+          <div class="cart-summary-note">
+            <h4>Loyalty rewards</h4>
+            <p>Earn points with every purchase and redeem them for exclusive discounts, special promotional offers, and complimentary accessories.</p>
+          </div>
+          <button type="button">Continue Shopping</button>
+          <div class="cart-summary-note">
+            <h4>Looking for a lease to own option?</h4>
+            <p>Enjoy the tech you want today. <a href="#">Learn more ></a></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer" id="support">
+    <div class="shell footer-support-strip">
+      <article>
+        <div class="support-icon">?</div>
+        <a href="#">Visit our Support Center</a>
+      </article>
+      <article>
+        <div class="support-icon">□</div>
+        <a href="#">Check your Order Status</a>
+      </article>
+      <article>
+        <div class="support-icon">↔</div>
+        <a href="#">Shipping, Delivery & Pickup</a>
+      </article>
+      <article>
+        <div class="support-icon">↺</div>
+        <a href="#">Returns & Exchanges</a>
+      </article>
+      <article>
+        <div class="support-icon">$</div>
+        <a href="#">Price Match Guarantee</a>
+      </article>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

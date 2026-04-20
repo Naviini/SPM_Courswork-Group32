@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Cell Phones | Nexium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="all-cell-phones.css">
+</head>
+<body class="home-page phones-page">
+  <header class="home-header">
+    <div class="home-utility">
+      <div class="shell utility-inner">
+        <div class="utility-links">
+          <a href="#">Nexium Outlet</a>
+          <a href="#">Business Store</a>
+          <a href="#">Campus Deals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-primary">
+      <div class="shell primary-inner">
+        <a href="index.html" class="home-logo">
+          <span class="brand-mark">N</span>
+          <span class="logo-copy">
+            <strong>Nexium</strong>
+            <small>Premium tech</small>
+          </span>
+        </a>
+
+        <button class="menu-trigger" type="button">
+          <span class="menu-lines"></span>
+          <span>Menu</span>
+        </button>
+
+        <div class="home-search">
+          <input type="search" placeholder="Search Nexium phones, tablets, accessories">
+          <button type="button">⌕</button>
+        </div>
+
+        <div class="quick-actions">
+          <a href="store-locator.html" class="quick-action-link" aria-label="Find a store location">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 21s6-5.53 6-11a6 6 0 1 0-12 0c0 5.47 6 11 6 11Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+            </span>
+            <span class="quick-action-copy">
+              <span>Store Locator</span>
+              <small data-selected-branch>Colombo - Main Branch</small>
+            </span>
+          </a>
+          <a href="cart.html" class="quick-action-link" aria-label="Open cart page">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"></path>
+                <circle cx="10" cy="19" r="1.6"></circle>
+                <circle cx="17" cy="19" r="1.6"></circle>
+              </svg>
+            </span>
+            <span>Cart</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-secondary">
+      <div class="shell secondary-inner">
+        <nav class="secondary-links">
+          <a href="index.html#featured-offers">Top Deals</a>
+          <a href="index.html#featured-products">Featured Products</a>
+          <a href="index.html#advice">Discover</a>
+          <a href="index.html#preowned">Certified Pre-Owned</a>
+          <a href="index.html#accessories">Accessories</a>
+          <a href="customization-studio.html#customization-studio">Customization Studio</a>
+          <a href="index.html#catalog">Explore Items</a>
+        </nav>
+        <nav class="secondary-links secondary-links-right">
+          <a href="index.html#rewards">Rewards</a>
+          <a href="index.html#support">Order Status</a>
+          <a href="index.html#saved">Saved Items</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main phones-main">
+    <section class="phones-shell">
+      <div class="catalog-layout">
+        <aside class="catalog-sidebar" aria-label="Filters">
+          <section class="filter-section">
+            <h2>Get it fast</h2>
+            <label class="check-row">
+              <input type="checkbox" id="filterPickupReady">
+              <span>
+                Pickup - Ready in 1 hour
+                <small>North Anchorage (Tikathru Commons) &amp; nearby stores</small>
+              </span>
+            </label>
+            <p class="filter-note">Shipping · Get it today</p>
+            <a href="#">96939</a>
+          </section>
+
+          <section class="filter-section">
+            <h2>Availability</h2>
+            <label class="check-row">
+              <input type="checkbox" id="filterInStockOnly">
+              <span>Exclude Out of Stock Items</span>
+            </label>
+          </section>
+
+          <section class="filter-section">
+            <h2>Category</h2>
+            <nav class="text-filter-links" aria-label="Category links">
+              <button type="button" class="link-button is-active" data-category-filter="all">All Cell Phones</button>
+              <button type="button" class="link-button" data-category-filter="plans">All Cell Phones with Plans</button>
+              <button type="button" class="link-button" data-category-filter="prepaid">All Prepaid Cell Phones</button>
+              <button type="button" class="link-button" data-category-filter="unlocked">All Unlocked Cell Phones</button>
+            </nav>
+          </section>
+
+          <section class="filter-section">
+            <h2>Carrier Compatibility</h2>
+            <input class="filter-search" type="search" placeholder="Search Carrier Compatibility" data-option-search="carrierList">
+            <div class="option-list" id="carrierList">
+              <label><input type="checkbox" class="carrier-filter" value="unlocked"> Unlocked</label>
+              <label><input type="checkbox" class="carrier-filter" value="t-mobile"> T-Mobile</label>
+              <label><input type="checkbox" class="carrier-filter" value="metro"> Metro by T-Mobile</label>
+              <label><input type="checkbox" class="carrier-filter" value="verizon"> Verizon</label>
+              <label><input type="checkbox" class="carrier-filter" value="google-fi"> Google Fi</label>
+              <label class="option-extra"><input type="checkbox" class="carrier-filter" value="visible"> Visible</label>
+              <label class="option-extra"><input type="checkbox" class="carrier-filter" value="cricket"> Cricket</label>
+              <label class="option-extra"><input type="checkbox" class="carrier-filter" value="mint"> Mint Mobile</label>
+            </div>
+            <button type="button" class="show-more-button" data-toggle-options="carrierList">Show all</button>
+          </section>
+
+          <section class="filter-section">
+            <h2>Model Family</h2>
+            <input class="filter-search" type="search" placeholder="Search Model Family" data-option-search="modelList">
+            <div class="option-list" id="modelList">
+              <label><input type="checkbox" class="model-filter" value="iphone-17-pro-max"> Apple iPhone 17 Pro Max</label>
+              <label><input type="checkbox" class="model-filter" value="iphone-17"> Apple iPhone 17</label>
+              <label><input type="checkbox" class="model-filter" value="iphone-16"> Apple iPhone 16</label>
+              <label><input type="checkbox" class="model-filter" value="galaxy-s26"> Samsung Galaxy S26</label>
+              <label><input type="checkbox" class="model-filter" value="galaxy-a16"> Samsung Galaxy A16</label>
+              <label class="option-extra"><input type="checkbox" class="model-filter" value="pixel-10"> Google Pixel 10</label>
+              <label class="option-extra"><input type="checkbox" class="model-filter" value="moto-g"> Motorola Moto G</label>
+              <label class="option-extra"><input type="checkbox" class="model-filter" value="jitterbug"> Lively Jitterbug</label>
+            </div>
+            <button type="button" class="show-more-button" data-toggle-options="modelList">Show all</button>
+          </section>
+
+          <section class="filter-section">
+            <h2>Brand</h2>
+            <input class="filter-search" type="search" placeholder="Search Brand" data-option-search="brandList">
+            <div class="option-list" id="brandList">
+              <label><input type="checkbox" class="brand-filter" value="samsung"> Samsung</label>
+              <label><input type="checkbox" class="brand-filter" value="apple"> Apple</label>
+              <label><input type="checkbox" class="brand-filter" value="motorola"> Motorola</label>
+              <label><input type="checkbox" class="brand-filter" value="google"> Google</label>
+              <label><input type="checkbox" class="brand-filter" value="lively"> Lively</label>
+              <label class="option-extra"><input type="checkbox" class="brand-filter" value="oneplus"> OnePlus</label>
+              <label class="option-extra"><input type="checkbox" class="brand-filter" value="nokia"> Nokia</label>
+            </div>
+            <button type="button" class="show-more-button" data-toggle-options="brandList">Show all</button>
+          </section>
+
+          <section class="filter-section">
+            <h2>Condition</h2>
+            <div class="condition-grid">
+              <label class="condition-card">
+                <input type="checkbox" class="condition-filter" value="new">
+                <strong>New</strong>
+                <small>Brand new</small>
+              </label>
+              <label class="condition-card">
+                <input type="checkbox" class="condition-filter" value="pre-owned">
+                <strong>Pre-Owned</strong>
+                <small>Used products restored and verified</small>
+              </label>
+              <label class="condition-card">
+                <input type="checkbox" class="condition-filter" value="open-box">
+                <strong>Open-Box</strong>
+                <small>Returned products under Nexium checks</small>
+              </label>
+              <label class="condition-card">
+                <input type="checkbox" class="condition-filter" value="refurbished">
+                <strong>Refurbished</strong>
+                <small>Like-new condition after repair cycle</small>
+              </label>
+            </div>
+          </section>
+
+          <section class="filter-section">
+            <h2>Operating System</h2>
+            <div class="option-list compact-list">
+              <label><input type="checkbox" class="os-filter" value="ios"> Apple iOS</label>
+              <label><input type="checkbox" class="os-filter" value="android"> Android</label>
+              <label><input type="checkbox" class="os-filter" value="ipados"> Apple iPadOS</label>
+              <label><input type="checkbox" class="os-filter" value="lively-os"> Lively Proprietary</label>
+              <label><input type="checkbox" class="os-filter" value="kaios"> KaiOS</label>
+            </div>
+          </section>
+
+          <section class="filter-section">
+            <h2>Price</h2>
+            <div class="price-input-row">
+              <input type="number" min="0" id="minPrice" placeholder="Min Price" aria-label="Minimum price">
+              <span>to</span>
+              <input type="number" min="0" id="maxPrice" placeholder="Max Price" aria-label="Maximum price">
+              <button type="button" id="applyPriceRange">Set</button>
+            </div>
+            <div class="option-list compact-list">
+              <label><input type="checkbox" class="price-quick-filter" value="under-25"> Less than $25</label>
+              <label><input type="checkbox" class="price-quick-filter" value="25-100"> $25 - $100</label>
+              <label><input type="checkbox" class="price-quick-filter" value="100-500"> $100 - $500</label>
+              <label><input type="checkbox" class="price-quick-filter" value="500-plus"> $500 &amp; Above</label>
+            </div>
+          </section>
+        </aside>
+
+        <section class="catalog-main" aria-label="All cell phones list">
+
+          <div class="breadcrumb-row">
+            <a href="index.html">Nexium</a>
+            <span>/</span>
+            <a href="index.html#catalog">Cell Phones</a>
+            <span>/</span>
+            <strong>All Cell Phones</strong>
+          </div>
+
+          <div class="catalog-title-row">
+            <h1>All Cell Phones <span id="resultCount">(0)</span></h1>
+            <label class="sort-select" for="sortSelect">
+              <span>Sort by:</span>
+              <select id="sortSelect">
+                <option value="best-selling">Best Selling</option>
+                <option value="price-low">Price Low to High</option>
+                <option value="price-high">Price High to Low</option>
+                <option value="rating-high">Top Rated</option>
+                <option value="newest">Newest</option>
+              </select>
+            </label>
+          </div>
+
+          <nav class="quick-chip-row" aria-label="Quick filters">
+            <button type="button" class="quick-chip is-active" data-chip-filter="all">All</button>
+            <button type="button" class="quick-chip" data-chip-filter="samsung">Samsung</button>
+            <button type="button" class="quick-chip" data-chip-filter="unlocked">Unlocked</button>
+            <button type="button" class="quick-chip" data-chip-filter="t-mobile">T-Mobile</button>
+            <button type="button" class="quick-chip" data-chip-filter="apple">Apple</button>
+            <button type="button" class="quick-chip" data-chip-filter="android">Android</button>
+            <button type="button" class="quick-chip" data-chip-filter="verizon">Verizon</button>
+            <button type="button" class="quick-chip" data-chip-filter="metro">Metro by T-Mobile</button>
+            <button type="button" class="quick-chip" data-chip-filter="open-box">Open-Box</button>
+            <button type="button" class="quick-chip" data-chip-filter="motorola">Motorola</button>
+            <button type="button" class="quick-chip" data-chip-filter="oneplus">OnePlus</button>
+          </nav>
+
+          <div class="product-grid" id="productGrid"></div>
+
+          <div class="catalog-footer-row">
+            <p id="shownCount">Showing 0 items</p>
+          </div>
+
+          <section class="new-rail" aria-label="New to Nexium">
+            <h2>New to Nexium</h2>
+            <div class="new-rail-row" id="newRail"></div>
+          </section>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer" id="support">
+    <div class="shell footer-support-strip">
+      <article>
+        <div class="support-icon">?</div>
+        <a href="#">Visit our Support Center</a>
+      </article>
+      <article>
+        <div class="support-icon">□</div>
+        <a href="#">Check your Order Status</a>
+      </article>
+      <article>
+        <div class="support-icon">↔</div>
+        <a href="#">Shipping, Delivery &amp; Pickup</a>
+      </article>
+      <article>
+        <div class="support-icon">↺</div>
+        <a href="#">Returns &amp; Exchanges</a>
+      </article>
+      <article>
+        <div class="support-icon">$</div>
+        <a href="#">Price Match Guarantee</a>
+      </article>
+    </div>
+  </footer>
+
+  <aside class="compare-tray is-hidden" id="compareTray" aria-live="polite">
+    <div class="compare-topbar">
+      <span id="compareStatus">Comparing 0 of 4 items</span>
+      <button type="button" id="compareCollapseButton" aria-expanded="true">Collapse</button>
+    </div>
+    <div class="compare-body" id="compareBody"></div>
+    <div class="compare-actions">
+      <button type="button" id="compareActionButton" disabled>Compare</button>
+    </div>
+  </aside>
+
+  <div class="compare-error-modal is-hidden" id="compareErrorModal" role="dialog" aria-modal="true" aria-labelledby="compareErrorTitle" aria-describedby="compareErrorDescription">
+    <div class="compare-error-modal-card" role="document">
+      <button class="compare-error-close" type="button" id="compareErrorClose" aria-label="Close compare error dialog">×</button>
+      <h2 id="compareErrorTitle">Error Occurred when adding items to compare</h2>
+      <p id="compareErrorDescription">You can compare up to 4 items at a time.</p>
+      <button class="compare-error-confirm" type="button" id="compareErrorConfirm">Okay, got it.</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="all-cell-phones.js"></script>
+</body>
+</html>
