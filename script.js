@@ -526,7 +526,7 @@ const initializeSideMenu = () => {
       <div class="side-menu-divider" aria-hidden="true"></div>
 
       <section class="side-menu-group">
-        <h2>Catogaries</h2>
+        <h2>Categories</h2>
         <nav class="side-menu-links" aria-label="Department links">
           ${departmentLinks
             .map(
