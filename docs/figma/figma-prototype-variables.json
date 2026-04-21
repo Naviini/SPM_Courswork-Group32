@@ -1,0 +1,68 @@
+{
+  "collection": "Nexium Prototype State",
+  "mode": "Default",
+  "variables": [
+    {
+      "name": "CartCount",
+      "type": "NUMBER",
+      "default": 0,
+      "min": 0,
+      "description": "Total cart units shown in header/cart badge"
+    },
+    {
+      "name": "SavedCount",
+      "type": "NUMBER",
+      "default": 0,
+      "min": 0,
+      "description": "Total saved items shown in saved badge"
+    },
+    {
+      "name": "CompareCount",
+      "type": "NUMBER",
+      "default": 0,
+      "min": 0,
+      "max": 4,
+      "description": "Total products selected for compare"
+    },
+    {
+      "name": "SelectedBranch",
+      "type": "STRING",
+      "default": "Colombo - Main Branch",
+      "description": "Current selected store branch"
+    },
+    {
+      "name": "CustomOrderCount",
+      "type": "NUMBER",
+      "default": 0,
+      "min": 0,
+      "description": "Submitted customization orders count"
+    },
+    {
+      "name": "PromoApplied",
+      "type": "BOOLEAN",
+      "default": false,
+      "description": "Whether customization promo is active"
+    },
+    {
+      "name": "CompareTrayCollapsed",
+      "type": "BOOLEAN",
+      "default": false,
+      "description": "Collapsed state of compare tray"
+    },
+    {
+      "name": "DealsPage",
+      "type": "NUMBER",
+      "default": 1,
+      "min": 1,
+      "max": 2,
+      "description": "Deals category carousel page"
+    },
+    {
+      "name": "RecommendationPage",
+      "type": "NUMBER",
+      "default": 1,
+      "min": 1,
+      "description": "Recommended products pager in cart"
+    }
+  ]
+}

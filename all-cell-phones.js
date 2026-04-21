@@ -541,6 +541,8 @@ const showAddedFeedback = (button) => {
   }, 1100);
 };
 
+const STORE_PRODUCT_TOTAL = 1024;
+
 const syncRenderedSaveButtons = () => {
   if (!productGrid || !shopState?.isSavedItem) {
     return;
@@ -818,18 +820,19 @@ const renderProducts = () => {
   }
 
   const filtered = applySort(filterProducts());
+  const visibleProducts = filtered.slice(0, STORE_PRODUCT_TOTAL);
 
-  resultCount.textContent = `(${filtered.length})`;
-  shownCount.textContent = filtered.length
-    ? `Showing ${filtered.length} of ${products.length} items`
+  resultCount.textContent = `(${visibleProducts.length})`;
+  shownCount.textContent = visibleProducts.length
+    ? `Showing ${visibleProducts.length} of ${STORE_PRODUCT_TOTAL} items`
     : "Showing 0 items";
 
-  if (!filtered.length) {
+  if (!visibleProducts.length) {
     productGrid.innerHTML = '<div class="filter-empty">No phones matched this filter combination.<br>Try clearing a few filters.</div>';
     return;
   }
 
-  productGrid.innerHTML = filtered
+  productGrid.innerHTML = visibleProducts
     .map((product) => {
       const variantsMarkup = product.variants.length
         ? `<div class="variant-swatches">${product.variants
