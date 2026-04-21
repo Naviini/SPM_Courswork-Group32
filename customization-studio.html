@@ -548,6 +548,23 @@
       color: #aaa;
     }
 
+    /* Active Item Controls Buttons */
+    .cs-ctrl-btn {
+      border: 1px solid #146B6B;
+      background: #fff;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #111;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .cs-ctrl-btn:hover { background: #f0f8f8; }
+    .cs-ctrl-btn.remove { background: #fffafb; border-color: #d1b8b8; color: #a00; }
+    .cs-ctrl-btn.remove:hover { background: #ffebeb; }
+
     /* Back to products */
     .cs-back-link {
       display: inline-flex;
@@ -1361,19 +1378,20 @@
             </div>
 
             <!-- Property controls for active element -->
-            <div id="activeItemControls" style="display:none; padding:12px; background:#fff; border:1px solid #e4e4e4; border-radius:12px; margin-bottom:12px; gap:16px; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
-              <div style="font-size:0.75rem; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:0.5px;">Edit</div>
-              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
-                <label style="font-size:0.7rem; color:#888;">Size</label>
-                <input type="range" id="itemScale" min="0.3" max="4" step="0.05" value="1" style="width:100%;">
-              </div>
-              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
-                <label style="font-size:0.7rem; color:#888;">Rotate</label>
-                <input type="range" id="itemRotate" min="-180" max="180" step="1" value="0" style="width:100%;">
-              </div>
-              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
-                <label style="font-size:0.7rem; color:#888;">Opacity</label>
-                <input type="range" id="itemOpacity" min="0.1" max="1" step="0.05" value="1" style="width:100%;">
+            <div id="activeItemControls" style="display:none; padding:16px; background:#fff; border:1px solid #146B6B; border-radius:8px; margin-bottom:12px; flex-direction:column; gap:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+              <div id="activeItemTitle" style="font-size:0.9rem; font-weight:600; color:#111;">Selected sticker </div>
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; width:100%;">
+                <button type="button" class="cs-ctrl-btn" id="btnRotLeft">Rotate Left</button>
+                <button type="button" class="cs-ctrl-btn" id="btnRotRight">Rotate Right</button>
+                <button type="button" class="cs-ctrl-btn" id="btnSizeDec">Size -</button>
+                <button type="button" class="cs-ctrl-btn" id="btnSizeInc">Size +</button>
+                <button type="button" class="cs-ctrl-btn" id="btnMoveUp">Move Up</button>
+                <button type="button" class="cs-ctrl-btn" id="btnMoveDown">Move Down</button>
+                <button type="button" class="cs-ctrl-btn" id="btnMoveLeft">Move Left</button>
+                <button type="button" class="cs-ctrl-btn" id="btnMoveRight">Move Right</button>
+                <button type="button" class="cs-ctrl-btn" id="btnDuplicate">Duplicate</button>
+                <button type="button" class="cs-ctrl-btn" id="btnUndo">Undo Last</button>
+                <button type="button" class="cs-ctrl-btn remove" id="btnRemoveSel" style="grid-column: span 2;">Remove Selected</button>
               </div>
             </div>
 
@@ -1870,9 +1888,12 @@
         // Show and update controls
         const controls = document.getElementById('activeItemControls');
         controls.style.display = 'flex';
-        document.getElementById('itemScale').value = el.dataset.scale || 1;
-        document.getElementById('itemRotate').value = el.dataset.rotate || 0;
-        document.getElementById('itemOpacity').value = el.dataset.opacity || 1;
+        const titleEl = document.getElementById('activeItemTitle');
+        if (titleEl) {
+           const t = el.dataset.type;
+           const icon = t === 'image' ? '🖼️' : (t === 'text' ? '🔤' : '💎');
+           titleEl.textContent = `Selected ${t} ${icon}`;
+        }
       };
 
       const startDrag = (clientX, clientY) => {
@@ -1940,18 +1961,74 @@
     /* ─── Element Controls ─── */
     function updateActiveElementTransform() {
       if (!activeElement) return;
-      const s = document.getElementById('itemScale').value;
-      const r = document.getElementById('itemRotate').value;
-      const o = document.getElementById('itemOpacity').value;
-      activeElement.dataset.scale = s;
-      activeElement.dataset.rotate = r;
-      activeElement.dataset.opacity = o;
+      const r = activeElement.dataset.rotate || 0;
+      const s = activeElement.dataset.scale || 1;
       activeElement.style.transform = `translate(-50%, -50%) rotate(${r}deg) scale(${s})`;
-      activeElement.style.opacity = o;
     }
-    document.getElementById('itemScale').addEventListener('input', updateActiveElementTransform);
-    document.getElementById('itemRotate').addEventListener('input', updateActiveElementTransform);
-    document.getElementById('itemOpacity').addEventListener('input', updateActiveElementTransform);
+
+    document.getElementById('btnRotLeft').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.dataset.rotate = Number(activeElement.dataset.rotate) - 15;
+      updateActiveElementTransform();
+    });
+    document.getElementById('btnRotRight').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.dataset.rotate = Number(activeElement.dataset.rotate) + 15;
+      updateActiveElementTransform();
+    });
+    document.getElementById('btnSizeInc').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.dataset.scale = Number(activeElement.dataset.scale) + 0.1;
+      updateActiveElementTransform();
+    });
+    document.getElementById('btnSizeDec').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.dataset.scale = Math.max(0.1, Number(activeElement.dataset.scale) - 0.1);
+      updateActiveElementTransform();
+    });
+    document.getElementById('btnMoveUp').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.style.top = (parseFloat(activeElement.style.top) - 5) + 'px';
+    });
+    document.getElementById('btnMoveDown').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.style.top = (parseFloat(activeElement.style.top) + 5) + 'px';
+    });
+    document.getElementById('btnMoveLeft').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.style.left = (parseFloat(activeElement.style.left) - 5) + 'px';
+    });
+    document.getElementById('btnMoveRight').addEventListener('click', () => {
+      if(!activeElement) return;
+      activeElement.style.left = (parseFloat(activeElement.style.left) + 5) + 'px';
+    });
+    document.getElementById('btnDuplicate').addEventListener('click', () => {
+      if(!activeElement) return;
+      const type = activeElement.dataset.type;
+      let content = '';
+      if(type === 'image') content = activeElement.querySelector('img').src;
+      else if(type === 'text') content = Array.from(activeElement.childNodes).find(n=>n.nodeType===3).textContent;
+      else content = Array.from(activeElement.childNodes).find(n=>n.nodeType===3)?.textContent || '✨';
+      addCanvasElement(type, content);
+    });
+    document.getElementById('btnUndo').addEventListener('click', () => {
+      const els = Array.from(getActiveCanvas().querySelectorAll('.canvas-element'));
+      if(els.length > 0) {
+        const lastEl = els[els.length - 1];
+        if(activeElement === lastEl) {
+           activeElement = null;
+           document.getElementById('activeItemControls').style.display = 'none';
+        }
+        lastEl.remove();
+        updateElemCount();
+      }
+    });
+    document.getElementById('btnRemoveSel').addEventListener('click', () => {
+      if(activeElement) {
+        const delBtn = activeElement.querySelector('.cs-del-btn');
+        if(delBtn) delBtn.click();
+      }
+    });
 
     function addCanvasElement(type, content, styles = {}) {
       const canvas = getActiveCanvas();
@@ -2035,9 +2112,12 @@
       const controls = document.getElementById('activeItemControls');
       if (controls) {
          controls.style.display = 'flex';
-         document.getElementById('itemScale').value = el.dataset.scale || 1;
-         document.getElementById('itemRotate').value = el.dataset.rotate || 0;
-         document.getElementById('itemOpacity').value = el.dataset.opacity || 1;
+         const titleEl = document.getElementById('activeItemTitle');
+         if (titleEl) {
+           const t = el.dataset.type;
+           const icon = t === 'image' ? '🖼️' : (t === 'text' ? '🔤' : '💎');
+           titleEl.textContent = `Selected ${t} ${icon}`;
+         }
       }
     }
 
