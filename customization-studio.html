@@ -4,12 +4,801 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexium | Customization Studio</title>
+  <meta name="description" content="Design your perfect phone case or AirPods cover at the Nexium Customization Studio. Add text, stickers, and choose from beautiful templates.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="all-cell-phones.css">
+  <style>
+    /* ─── Page-level overrides ─── */
+    body.customization-page {
+      background: #f5f7f5;
+    }
+
+    /* ─── Hero banner ─── */
+    .cs-hero {
+      background: #0d7377;
+      padding: 28px 0 24px;
+    }
+    .cs-hero-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .cs-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.72);
+      font-size: 0.88rem;
+      margin-bottom: 10px;
+    }
+    .cs-breadcrumb a { color: rgba(255,255,255,0.72); }
+    .cs-breadcrumb a:hover { color: #fff; }
+    .cs-breadcrumb span { color: #fff; }
+    .cs-hero h1 {
+      margin: 0 0 6px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      color: #fff;
+      line-height: 1.1;
+    }
+    .cs-hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.97rem;
+    }
+
+    /* ─── Step indicator ─── */
+    .cs-steps {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cs-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.52);
+      font-size: 0.93rem;
+      font-weight: 600;
+    }
+    .cs-step.is-done { color: #fff; }
+    .cs-step.is-active { color: #fff; font-weight: 700; }
+    .cs-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.83rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .cs-step.is-done .cs-step-num {
+      background: #fff;
+      color: #0d7377;
+      border-color: #fff;
+    }
+    .cs-step.is-active .cs-step-num {
+      border-color: #fff;
+    }
+    .cs-step-arrow {
+      color: rgba(255,255,255,0.38);
+      font-size: 1rem;
+      margin: 0 2px;
+    }
+
+    /* ─── Main content area ─── */
+    .cs-main {
+      padding: 28px 0 60px;
+    }
+    .cs-shell {
+      width: min(1180px, calc(100vw - 48px));
+      margin: 0 auto;
+    }
+
+    /* ════════════════════════════
+       VIEW 1 — Product selection
+    ════════════════════════════ */
+    #view-select { display: block; }
+    #view-design { display: none; }
+
+    /* Filter tabs */
+    .cs-filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 26px;
+    }
+    .cs-tab {
+      border: 1.5px solid #d4d4d4;
+      border-radius: 999px;
+      padding: 9px 22px;
+      background: #fff;
+      color: #000;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .cs-tab:hover { border-color: #0d7377; }
+    .cs-tab.is-active {
+      background: #0d7377;
+      border-color: #0d7377;
+      color: #fff;
+    }
+
+    /* Product grid */
+    .cs-product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .cs-product-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+    .cs-product-card:hover {
+      box-shadow: 0 12px 40px rgba(13,115,119,0.14);
+      transform: translateY(-2px);
+      border-color: #0d7377;
+    }
+    .cs-product-card.is-hidden { display: none; }
+
+    /* Card image area */
+    .cs-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      background: #f0f0f0;
+    }
+    .cs-card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #e8eded, #c8d8d9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+    }
+
+    /* Real product images */
+    .cs-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: contain;
+      background: #f8f8f8;
+      display: block;
+    }
+
+    /* Badge top-left */
+    .cs-card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #0d7377;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .cs-card-badge.new { background: #0d7377; }
+
+    /* Customize hover button */
+    .cs-customize-btn {
+      position: absolute;
+      bottom: 130px;
+      right: 14px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #e0e0e0;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+    .cs-product-card:hover .cs-customize-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Card body */
+    .cs-card-body {
+      padding: 14px 16px 16px;
+    }
+    .cs-card-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #0d7377;
+      margin-bottom: 4px;
+    }
+    .cs-card-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cs-card-name {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.3;
+    }
+    .cs-card-price {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0d7377;
+      white-space: nowrap;
+    }
+    .cs-card-swatches {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .cs-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.18);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .cs-swatch-count {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+
+    /* ════════════════════════════
+       VIEW 2 — Design Studio
+    ════════════════════════════ */
+    .cs-studio-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr 300px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .cs-sidebar {
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .cs-sidebar-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid #eee;
+    }
+    .cs-sidebar-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 12px 4px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #777;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .cs-sidebar-tab .tab-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    .cs-sidebar-tab.is-active {
+      color: #0d7377;
+      border-bottom-color: #0d7377;
+    }
+    .cs-sidebar-tab:hover:not(.is-active) { color: #333; }
+
+    .cs-sidebar-body { padding: 16px; }
+    .cs-sidebar-description {
+      font-size: 0.84rem;
+      color: #666;
+      margin: 0 0 14px;
+      line-height: 1.5;
+    }
+
+    /* Template list */
+    .cs-template-list { display: grid; gap: 4px; }
+    .cs-template-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: 1.5px solid transparent;
+    }
+    .cs-template-item:hover { background: #f5f5f5; }
+    .cs-template-item.is-active {
+      background: rgba(13,115,119,0.07);
+      border-color: #0d7377;
+    }
+    .cs-template-thumb {
+      width: 40px;
+      height: 52px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .cs-template-info { flex: 1; min-width: 0; }
+    .cs-template-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #111;
+    }
+    .cs-template-count {
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    /* Canvas bg colors */
+    .cs-bg-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #555;
+      margin: 16px 0 8px;
+    }
+    .cs-bg-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .cs-bg-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .cs-bg-swatch:hover { transform: scale(1.15); }
+    .cs-bg-swatch.is-active { border-color: #0d7377; }
+
+    /* Text tab */
+    .cs-text-field { margin-bottom: 14px; }
+    .cs-text-field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    .cs-text-field input[type="text"],
+    .cs-text-field select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .cs-text-field input:focus,
+    .cs-text-field select:focus { border-color: #0d7377; }
+
+    /* Stickers tab */
+    .cs-sticker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .cs-sticker-btn {
+      aspect-ratio: 1;
+      border: 1.5px solid #eee;
+      border-radius: 10px;
+      background: #fafafa;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .cs-sticker-btn:hover {
+      background: #f0f8f8;
+      border-color: #0d7377;
+      transform: scale(1.08);
+    }
+
+    /* ── Canvas area ── */
+    .cs-canvas-panel {
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .cs-canvas-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .cs-canvas-title {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111;
+    }
+    .cs-canvas-subtitle {
+      font-size: 0.82rem;
+      color: #888;
+    }
+    .cs-color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cs-color-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .cs-color-dot:hover { transform: scale(1.2); }
+    .cs-color-dot.is-active { border-color: #0d7377; }
+    .cs-color-name {
+      font-size: 0.8rem;
+      color: #777;
+      margin-left: 4px;
+    }
+
+    /* Phone canvas */
+    .cs-canvas-wrap {
+      background: #f3f5f4;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 0;
+      min-height: 420px;
+      position: relative;
+    }
+    .cs-phone-svg {
+      width: 200px;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.16));
+    }
+    .cs-canvas-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .cs-canvas-placeholder-icon { font-size: 2rem; opacity: 0.35; }
+    .cs-canvas-placeholder-text {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    /* Canvas footer */
+    .cs-canvas-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+    .cs-canvas-hint {
+      font-size: 0.78rem;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cs-clear-btn {
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      padding: 6px 16px;
+      background: transparent;
+      font-size: 0.82rem;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cs-clear-btn:hover { border-color: #0d7377; color: #0d7377; }
+    .cs-elem-count {
+      font-size: 0.82rem;
+      color: #aaa;
+    }
+
+    /* Back to products */
+    .cs-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      color: #0d7377;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 16px;
+      border: 0;
+      background: none;
+      padding: 0;
+      text-decoration: none;
+    }
+    .cs-back-link:hover { opacity: 0.75; }
+
+    /* ── Order summary panel ── */
+    .cs-order-panel {
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .cs-order-panel h3 {
+      margin: 0 0 16px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111;
+    }
+    .cs-order-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cs-order-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #e8eded, #c8d8d9);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .cs-order-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #f8f8f8;
+    }
+    .cs-order-item-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #0d7377;
+    }
+    .cs-order-item-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.3;
+      margin: 3px 0 2px;
+    }
+    .cs-order-item-color {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .cs-order-item-color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+      display: inline-block;
+    }
+
+    /* Price breakdown */
+    .cs-price-list { margin: 0 0 14px; }
+    .cs-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.88rem;
+      color: #444;
+    }
+    .cs-price-row:last-child { border-bottom: 0; }
+    .cs-price-row.total {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #111;
+      padding-top: 12px;
+      border-top: 1.5px solid #e4e4e4;
+      border-bottom: 0;
+      margin-top: 4px;
+    }
+    .cs-price-free { color: #0d7377; font-weight: 700; }
+
+    /* Quantity */
+    .cs-qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .cs-qty-label { font-size: 0.88rem; font-weight: 700; color: #444; }
+    .cs-qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .cs-qty-btn {
+      width: 32px;
+      height: 32px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+      color: #333;
+    }
+    .cs-qty-btn:hover { border-color: #0d7377; }
+    .cs-qty-num {
+      width: 40px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+    .cs-qty-total {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #0d7377;
+    }
+
+    /* CTA buttons */
+    .cs-order-cta {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #0d7377;
+      color: #fff;
+      border: 0;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.97rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.18s;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .cs-order-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+    .cs-change-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 12px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #444;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      margin-bottom: 16px;
+    }
+    .cs-change-btn:hover { border-color: #0d7377; color: #0d7377; }
+
+    /* Benefits list */
+    .cs-benefits {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .cs-benefits li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.83rem;
+      color: #555;
+    }
+    .cs-benefit-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    /* ── FAQ / help button ── */
+    .cs-help-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1.5px solid #ddd;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #555;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      transition: box-shadow 0.15s;
+    }
+    .cs-help-btn:hover { box-shadow: 0 6px 22px rgba(13,115,119,0.2); color: #0d7377; }
+
+    @media (max-width: 1100px) {
+      .cs-studio-layout { grid-template-columns: 240px 1fr 280px; }
+    }
+    @media (max-width: 900px) {
+      .cs-product-grid { grid-template-columns: repeat(2, 1fr); }
+      .cs-studio-layout { grid-template-columns: 1fr; }
+      .cs-hero-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body class="home-page customization-page">
+
+  <!-- ══════════════ HEADER ══════════════ -->
   <header class="home-header">
     <div class="home-utility">
       <div class="shell utility-inner">
@@ -64,6 +853,18 @@
             </span>
             <span>Cart</span>
           </a>
+          <a href="#" class="quick-action-link" aria-label="Sign in">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>
+              </svg>
+            </span>
+            <span class="quick-action-copy">
+              <span>Sign in</span>
+              <small>Sign in / Sign out</small>
+            </span>
+          </a>
         </div>
       </div>
     </div>
@@ -75,7 +876,7 @@
           <a href="index.html#featured-products">Featured Products</a>
           <a href="index.html#advice">Discover</a>
           <a href="index.html#preowned">Certified Pre-Owned</a>
-          <a href="customization-studio.html#customization-studio">Customization Studio</a>
+          <a href="customization-studio.html" class="secondary-link-active">Customization Studio</a>
           <a href="index.html#catalog">Explore Items</a>
           <a href="index.html#advice">Gift Ideas</a>
         </nav>
@@ -88,157 +889,589 @@
     </div>
   </header>
 
-  <main class="home-main">
-    <section class="shell customization-section" id="customization-studio">
-      <div class="section-title-row">
-        <div>
-          <h2>Customization Studio</h2>
-        </div>
+  <!-- ══════════════ HERO BANNER ══════════════ -->
+  <div class="cs-hero" id="customization-studio">
+    <div class="cs-shell cs-hero-inner">
+      <div>
+        <nav class="cs-breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span>›</span>
+          <span>Customization Studio</span>
+        </nav>
+        <h1>Customization Studio</h1>
+        <p>Design your perfect phone case or AirPods cover — add text, stickers, and choose from beautiful templates.</p>
       </div>
+      <ol class="cs-steps" aria-label="Steps" id="stepIndicator">
+        <li class="cs-step is-active" id="step1">
+          <span class="cs-step-num">1</span>
+          <span>Choose Product</span>
+        </li>
+        <span class="cs-step-arrow" aria-hidden="true">›</span>
+        <li class="cs-step" id="step2">
+          <span class="cs-step-num">2</span>
+          <span>Design It</span>
+        </li>
+        <span class="cs-step-arrow" aria-hidden="true">›</span>
+        <li class="cs-step" id="step3">
+          <span class="cs-step-num">3</span>
+          <span>Order</span>
+        </li>
+      </ol>
+    </div>
+  </div>
 
-      <article class="customization-studio" data-customization-studio="web">
-        <div class="customization-layout">
-          <div class="customization-controls">
-            <div class="customization-field">
-              <label for="webProductType">Product to personalize</label>
-              <select id="webProductType" data-customization-product>
-                <option value="mobile-back-cover" selected>Mobile Back Cover</option>
-                <option value="airpods-case">AirPods Case</option>
-              </select>
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="cs-main">
+    <div class="cs-shell">
+
+      <!-- ════ VIEW 1: Product Selection ════ -->
+      <section id="view-select" aria-label="Choose a product to customize">
+
+        <!-- Filter tabs -->
+        <nav class="cs-filter-tabs" aria-label="Product type filters" role="tablist">
+          <button class="cs-tab is-active" type="button" data-filter="all" role="tab" aria-selected="true" id="tab-all">All</button>
+          <button class="cs-tab" type="button" data-filter="phone" role="tab" aria-selected="false" id="tab-phone">Phone Cover</button>
+          <button class="cs-tab" type="button" data-filter="airpods" role="tab" aria-selected="false" id="tab-airpods">AirPods Case</button>
+        </nav>
+
+        <!-- Product grid -->
+        <div class="cs-product-grid" id="csProductGrid">
+
+          <!-- iPhone 15 / 15 Plus Back Cover -->
+          <article class="cs-product-card" data-type="phone" data-product="iphone15" tabindex="0" role="button" aria-label="Customize iPhone 15 / 15 Plus Back Cover — $24.99" id="card-iphone15">
+            <span class="cs-card-badge">Popular</span>
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_iphone15.png" alt="iPhone 15 / 15 Plus Back Cover" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">Phone Cover</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">iPhone 15 / 15 Plus Back Cover</span>
+                <span class="cs-card-price">$24.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#111;"></span>
+                <span class="cs-swatch" style="background:#f5e0e0;"></span>
+                <span class="cs-swatch" style="background:#dce9f5;"></span>
+                <span class="cs-swatch" style="background:#e5eed9;"></span>
+                <span class="cs-swatch-count">5 colors</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- iPhone 15 Pro / Pro Max Back Cover -->
+          <article class="cs-product-card" data-type="phone" data-product="iphone15pro" tabindex="0" role="button" aria-label="Customize iPhone 15 Pro / Pro Max Back Cover — $29.99" id="card-iphone15pro">
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_iphone15pro.png" alt="iPhone 15 Pro / Pro Max Back Cover" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">Phone Cover</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">iPhone 15 Pro / Pro Max Back Cover</span>
+                <span class="cs-card-price">$29.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#888;"></span>
+                <span class="cs-swatch" style="background:#111;"></span>
+                <span class="cs-swatch" style="background:#c8a87a;"></span>
+                <span class="cs-swatch-count">4 colors</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Samsung Galaxy S24 Cover -->
+          <article class="cs-product-card" data-type="phone" data-product="galaxys24" tabindex="0" role="button" aria-label="Customize Samsung Galaxy S24 / S24+ Cover — $22.99" id="card-galaxys24">
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_galaxys24.png" alt="Samsung Galaxy S24 / S24+ Cover" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">Phone Cover</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">Samsung Galaxy S24 / S24+ Cover</span>
+                <span class="cs-card-price">$22.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#111;"></span>
+                <span class="cs-swatch" style="background:#e8d0e8;"></span>
+                <span class="cs-swatch" style="background:#b8e0d8;"></span>
+                <span class="cs-swatch" style="background:#dce0e8;"></span>
+                <span class="cs-swatch-count">5 colors</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Google Pixel 8 / 8 Pro -->
+          <article class="cs-product-card" data-type="phone" data-product="pixel8" tabindex="0" role="button" aria-label="Customize Google Pixel 8 / 8 Pro Back Cover — $21.99" id="card-pixel8">
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_pixel8.webp" alt="Google Pixel 8 / 8 Pro Back Cover" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">Phone Cover</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">Google Pixel 8 / 8 Pro Back Cover</span>
+                <span class="cs-card-price">$21.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#111;"></span>
+                <span class="cs-swatch" style="background:#3a7a5a;"></span>
+                <span class="cs-swatch" style="background:#e8a090;"></span>
+                <span class="cs-swatch-count">4 colors</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- AirPods 2nd & 3rd Gen Case -->
+          <article class="cs-product-card" data-type="airpods" data-product="airpods23" tabindex="0" role="button" aria-label="Customize AirPods 2nd and 3rd Gen Case — $19.99" id="card-airpods23">
+            <span class="cs-card-badge new">New</span>
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_airpods23.png" alt="AirPods (2nd &amp; 3rd Gen) Case" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">AirPods Case</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">AirPods (2nd &amp; 3rd Gen) Case</span>
+                <span class="cs-card-price">$19.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#111;"></span>
+                <span class="cs-swatch" style="background:#f5a0a0;"></span>
+                <span class="cs-swatch" style="background:#a0c0f5;"></span>
+                <span class="cs-swatch" style="background:#a0e0c0;"></span>
+                <span class="cs-swatch-count">5 colors</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- AirPods Pro Case -->
+          <article class="cs-product-card" data-type="airpods" data-product="airpodspro" tabindex="0" role="button" aria-label="Customize AirPods Pro 1st and 2nd Gen Case — $22.99" id="card-airpodspro">
+            <div class="cs-customize-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M14.7 2.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4L6.5 16.5 3 17l.5-3.5L14.7 2.3Z" stroke="#111" stroke-width="1.5" stroke-linecap="round"></path></svg>
+              Customize
+            </div>
+            <img class="cs-card-img" src="assets/case_airpodspro.png" alt="AirPods Pro (1st &amp; 2nd Gen) Case" loading="lazy">
+            <div class="cs-card-body">
+              <p class="cs-card-label">AirPods Case</p>
+              <div class="cs-card-row">
+                <span class="cs-card-name">AirPods Pro (1st &amp; 2nd Gen) Case</span>
+                <span class="cs-card-price">$22.99</span>
+              </div>
+              <div class="cs-card-swatches">
+                <span class="cs-swatch" style="background:#f5f5f5;"></span>
+                <span class="cs-swatch" style="background:#e0d0f0;"></span>
+                <span class="cs-swatch" style="background:#f5a0a0;"></span>
+                <span class="cs-swatch" style="background:#a0c0f5;"></span>
+                <span class="cs-swatch-count">4 colors</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ════ VIEW 2: Design Studio ════ -->
+      <section id="view-design" aria-label="Design your custom case">
+
+        <button class="cs-back-link" id="backToProducts" type="button" aria-label="Back to product selection">
+          ‹ Back to products
+        </button>
+
+        <div class="cs-studio-layout">
+
+          <!-- ── LEFT: Sidebar tools ── -->
+          <aside class="cs-sidebar" aria-label="Design tools">
+            <div class="cs-sidebar-tabs" role="tablist" aria-label="Design tool tabs">
+              <button class="cs-sidebar-tab is-active" type="button" role="tab" aria-selected="true" data-panel="templates" id="stab-templates">
+                <span class="tab-icon">⊞</span>
+                Templates
+              </button>
+              <button class="cs-sidebar-tab" type="button" role="tab" aria-selected="false" data-panel="text" id="stab-text">
+                <span class="tab-icon">T</span>
+                Text
+              </button>
+              <button class="cs-sidebar-tab" type="button" role="tab" aria-selected="false" data-panel="stickers" id="stab-stickers">
+                <span class="tab-icon">✦</span>
+                Stickers
+              </button>
+              <button class="cs-sidebar-tab" type="button" role="tab" aria-selected="false" data-panel="image" id="stab-image">
+                <span class="tab-icon">⊟</span>
+                Image
+              </button>
             </div>
 
-            <div class="customization-field">
-              <span class="field-label">Choose a pre-designed template</span>
-              <div class="template-grid" role="radiogroup" aria-label="Design templates">
-                <button type="button" class="template-button is-active" data-template-key="neon-wave" aria-pressed="true">Neon Wave</button>
-                <button type="button" class="template-button" data-template-key="sunset-pop" aria-pressed="false">Sunset Pop</button>
-                <button type="button" class="template-button" data-template-key="minimal-grid" aria-pressed="false">Minimal Grid</button>
-                <button type="button" class="template-button" data-template-key="sport-stripe" aria-pressed="false">Sport Stripe</button>
+            <!-- Templates panel -->
+            <div class="cs-sidebar-body" id="panel-templates">
+              <p class="cs-sidebar-description">Apply a pre-designed template to get started quickly.</p>
+              <div class="cs-template-list" role="radiogroup" aria-label="Templates">
+                <div class="cs-template-item is-active" data-template="minimal" tabindex="0" role="radio" aria-checked="true" id="tpl-minimal">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#f0e8f8,#d8c8ec);">💜</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Minimal</div>
+                    <div class="cs-template-count">2 elements</div>
+                  </div>
+                </div>
+                <div class="cs-template-item" data-template="nature" tabindex="0" role="radio" aria-checked="false" id="tpl-nature">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#e8f5e8,#c0d8b8);">🌿</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Nature</div>
+                    <div class="cs-template-count">4 elements</div>
+                  </div>
+                </div>
+                <div class="cs-template-item" data-template="gaming" tabindex="0" role="radio" aria-checked="false" id="tpl-gaming">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🎮</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Gaming</div>
+                    <div class="cs-template-count">4 elements</div>
+                  </div>
+                </div>
+                <div class="cs-template-item" data-template="love" tabindex="0" role="radio" aria-checked="false" id="tpl-love">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#ffe0e8,#f8b8c8);">❤️</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Love</div>
+                    <div class="cs-template-count">4 elements</div>
+                  </div>
+                </div>
+                <div class="cs-template-item" data-template="cosmic" tabindex="0" role="radio" aria-checked="false" id="tpl-cosmic">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#0a0a1a,#1a0a2e);">🌌</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Cosmic</div>
+                    <div class="cs-template-count">5 elements</div>
+                  </div>
+                </div>
+                <div class="cs-template-item" data-template="tropical" tabindex="0" role="radio" aria-checked="false" id="tpl-tropical">
+                  <div class="cs-template-thumb" style="background:linear-gradient(135deg,#e8f5d0,#b8e0a0);">🌴</div>
+                  <div class="cs-template-info">
+                    <div class="cs-template-name">Tropical</div>
+                    <div class="cs-template-count">4 elements</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cs-bg-label">Canvas background</div>
+              <div class="cs-bg-swatches" role="radiogroup" aria-label="Canvas background color">
+                <span class="cs-bg-swatch is-active" style="background:#0d7377;" data-bg="#0d7377" title="Teal" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#f5e0e8;" data-bg="#f5e0e8" title="Blush" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#d8ecd8;" data-bg="#d8ecd8" title="Mint" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#e0ece0;" data-bg="#e0ece0" title="Sage" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#dce8f5;" data-bg="#dce8f5" title="Sky" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#f8f0d8;" data-bg="#f8f0d8" title="Sand" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#1a1a2e;" data-bg="#1a1a2e" title="Night" tabindex="0"></span>
+                <span class="cs-bg-swatch" style="background:#0d0d0d;" data-bg="#0d0d0d" title="Black" tabindex="0"></span>
               </div>
             </div>
 
-            <div class="customization-field">
-              <label for="webCustomText">Add custom text</label>
-              <input id="webCustomText" type="text" maxlength="28" placeholder="Type a name, phrase, or initials" data-customization-text>
-            </div>
-
-            <div class="text-style-grid" aria-label="Text style controls">
-              <div class="customization-field">
-                <label for="webTextColor">Text color</label>
-                <input id="webTextColor" class="text-color-input" type="color" value="#ffffff" data-customization-text-color>
+            <!-- Text panel -->
+            <div class="cs-sidebar-body" id="panel-text" style="display:none;">
+              <p class="cs-sidebar-description">Add a name, phrase, or initials to your design.</p>
+              <div class="cs-text-field">
+                <label for="studioText">Custom text</label>
+                <input type="text" id="studioText" maxlength="28" placeholder="Type text here…" autocomplete="off">
               </div>
-              <div class="customization-field">
-                <label for="webTextFont">Text font</label>
-                <select id="webTextFont" data-customization-text-font>
-                  <option value="space-grotesk" selected>Space Grotesk</option>
+              <div class="cs-text-field">
+                <label for="studioFont">Font</label>
+                <select id="studioFont">
                   <option value="manrope">Manrope</option>
-                  <option value="serif-display">Serif Display</option>
-                  <option value="mono-tech">Mono Tech</option>
+                  <option value="space-grotesk">Space Grotesk</option>
+                  <option value="serif">Serif Display</option>
+                  <option value="mono">Mono Tech</option>
                 </select>
               </div>
+              <div class="cs-text-field">
+                <label for="studioColor">Text color</label>
+                <input type="color" id="studioColor" value="#ffffff" style="width:100%;height:38px;border-radius:10px;border:1.5px solid #ddd;padding:2px 6px;cursor:pointer;">
+              </div>
+              <div class="cs-text-field">
+                <label for="studioSize">Text size</label>
+                <input type="range" id="studioSize" min="14" max="52" value="28" style="width:100%;">
+              </div>
+              <button id="addTextBtn" type="button" style="width:100%; background:#0d7377; color:#fff; border:none; border-radius:10px; padding:10px; font-weight:bold; cursor:pointer; margin-top:10px;">Add Text</button>
             </div>
 
-            <div class="text-style-grid text-style-grid-advanced" aria-label="Advanced text controls">
-              <div class="customization-field">
-                <label for="webTextSize">Text size</label>
-                <input id="webTextSize" class="text-size-input" type="range" min="22" max="54" step="1" value="32" data-customization-text-size>
-                <p class="field-help" data-customization-text-size-label>32 px</p>
-              </div>
-              <div class="customization-field">
-                <label for="webTextPlacement">Text placement</label>
-                <select id="webTextPlacement" data-customization-text-placement>
-                  <option value="auto" selected>Auto (recommended)</option>
-                  <option value="top">Top</option>
-                  <option value="center">Center</option>
-                  <option value="bottom">Bottom</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="customization-field">
-              <span class="field-label">Quick text presets</span>
-              <div class="text-preset-grid" role="group" aria-label="Text presets">
-                <button type="button" class="text-preset-chip" data-customization-text-preset="NEXIUM CORE">NEXIUM CORE</button>
-                <button type="button" class="text-preset-chip" data-customization-text-preset="Signal Mode">Signal Mode</button>
-                <button type="button" class="text-preset-chip" data-customization-text-preset="Future Sound">Future Sound</button>
-                <button type="button" class="text-preset-chip" data-customization-text-preset="My Signature">My Signature</button>
+            <!-- Stickers panel -->
+            <div class="cs-sidebar-body" id="panel-stickers" style="display:none;">
+              <p class="cs-sidebar-description">Tap a sticker to add it to your design.</p>
+              <div class="cs-sticker-grid" role="group" aria-label="Sticker options">
+                <button class="cs-sticker-btn" type="button" data-sticker="⭐" aria-label="Star">⭐</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🔥" aria-label="Fire">🔥</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🎧" aria-label="Headphones">🎧</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="⚡" aria-label="Lightning">⚡</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🌈" aria-label="Rainbow">🌈</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="💎" aria-label="Diamond">💎</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🌙" aria-label="Moon">🌙</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🦋" aria-label="Butterfly">🦋</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🎵" aria-label="Music">🎵</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🌸" aria-label="Flower">🌸</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="🚀" aria-label="Rocket">🚀</button>
+                <button class="cs-sticker-btn" type="button" data-sticker="💫" aria-label="Sparkle">💫</button>
               </div>
             </div>
 
-            <div class="customization-field">
-              <span class="field-label">Add stickers</span>
-              <div class="sticker-grid" aria-label="Sticker options">
-                <button type="button" class="sticker-button" data-sticker="⭐" aria-label="Add star sticker">⭐</button>
-                <button type="button" class="sticker-button" data-sticker="🔥" aria-label="Add fire sticker">🔥</button>
-                <button type="button" class="sticker-button" data-sticker="🎧" aria-label="Add headphones sticker">🎧</button>
-                <button type="button" class="sticker-button" data-sticker="⚡" aria-label="Add lightning sticker">⚡</button>
-                <button type="button" class="sticker-button" data-sticker="🌈" aria-label="Add rainbow sticker">🌈</button>
-                <button type="button" class="sticker-button" data-sticker="💎" aria-label="Add diamond sticker">💎</button>
+            <!-- Image panel -->
+            <div class="cs-sidebar-body" id="panel-image" style="display:none;">
+              <p class="cs-sidebar-description">Upload a photo or image to place on your case.</p>
+              <label style="display:block;background:#f5f5f5;border:2px dashed #ccc;border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;">
+                <input type="file" accept="image/*" style="display:none;" id="studioImageUpload">
+                <div style="font-size:2rem;margin-bottom:8px;">🖼️</div>
+                <div style="font-size:0.88rem;color:#666;">Click to upload or drag an image here</div>
+                <div style="font-size:0.76rem;color:#aaa;margin-top:4px;">PNG, JPG, GIF up to 8MB</div>
+              </label>
+            </div>
+          </aside>
+
+          <!-- ── CENTRE: Canvas ── -->
+          <div class="cs-canvas-panel">
+            <div class="cs-canvas-header">
+              <div>
+                <div class="cs-canvas-title" id="canvasProductTitle">iPhone 15 Cover</div>
+                <div class="cs-canvas-subtitle" id="canvasProductSubtitle">Phone Cover</div>
               </div>
-              <div class="sticker-editor" aria-label="Sticker editing tools">
-                <p class="sticker-selection-copy" data-selected-sticker-copy>No sticker selected</p>
-                <div class="sticker-action-grid">
-                  <button type="button" class="sticker-action-button" data-sticker-action="rotate-left">Rotate Left</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="rotate-right">Rotate Right</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="size-down">Size -</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="size-up">Size +</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="move-up">Move Up</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="move-down">Move Down</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="move-left">Move Left</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="move-right">Move Right</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="duplicate">Duplicate</button>
-                  <button type="button" class="sticker-action-button" data-sticker-action="undo">Undo Last</button>
-                  <button type="button" class="sticker-action-button sticker-action-button-danger" data-sticker-action="remove">Remove Selected</button>
+              <div>
+                <div style="font-size:0.78rem;color:#888;margin-bottom:6px;">Color:</div>
+                <div class="cs-color-row">
+                  <span class="cs-color-dot is-active" style="background:#e8eded;" data-color="Crystal Clear" data-hex="#e8eded" title="Crystal Clear"></span>
+                  <span class="cs-color-dot" style="background:#111;" data-color="Midnight Black" data-hex="#111" title="Midnight Black"></span>
+                  <span class="cs-color-dot" style="background:#f5e0e0;" data-color="Blush Pink" data-hex="#f5e0e0" title="Blush Pink"></span>
+                  <span class="cs-color-dot" style="background:#dce9f5;" data-color="Ocean Blue" data-hex="#dce9f5" title="Ocean Blue"></span>
+                  <span class="cs-color-dot" style="background:#e5eed9;" data-color="Fresh Green" data-hex="#e5eed9" title="Fresh Green"></span>
+                  <span class="cs-color-name" id="colorName">Crystal Clear</span>
                 </div>
               </div>
             </div>
 
-            <div class="customization-field">
-              <label for="webAccent">Other visual element</label>
-              <select id="webAccent" data-customization-accent>
-                <option value="none" selected>None</option>
-                <option value="burst">Starburst Overlay</option>
-                <option value="ribbons">Ribbon Weave</option>
-                <option value="orbit">Orbit Ring</option>
-              </select>
+            <!-- Dynamic canvas: phone back cover OR AirPods case -->
+            <div class="cs-canvas-wrap" id="designCanvas">
+
+              <!-- ── PHONE BACK COVER SVG ── -->
+              <svg id="svgPhone" class="cs-phone-svg" viewBox="0 0 260 520" xmlns="http://www.w3.org/2000/svg" aria-label="Phone back cover design canvas">
+                <!-- Case outer rim / frame -->
+                <rect x="4" y="4" width="252" height="512" rx="40" ry="40" fill="#222"/>
+                <!-- Case back surface (colorable) -->
+                <rect x="12" y="12" width="236" height="496" rx="34" ry="34" id="caseColor" fill="#e8eded"/>
+                <!-- Subtle surface sheen -->
+                <rect x="12" y="12" width="236" height="496" rx="34" ry="34" fill="url(#phoneSheen)" opacity="0.18"/>
+                <!-- Camera module housing -->
+                <rect x="22" y="22" width="96" height="96" rx="22" ry="22" fill="rgba(0,0,0,0.25)"/>
+                <!-- Camera lens 1 (main) -->
+                <circle cx="56" cy="56" r="22" fill="#1a1a1a"/>
+                <circle cx="56" cy="56" r="17" fill="#2e2e3a"/>
+                <circle cx="56" cy="56" r="12" fill="#111"/>
+                <circle cx="48" cy="48" r="3.5" fill="rgba(255,255,255,0.22)"/>
+                <!-- Camera lens 2 (ultrawide) -->
+                <circle cx="96" cy="56" r="16" fill="#1a1a1a"/>
+                <circle cx="96" cy="56" r="11" fill="#2e2e3a"/>
+                <circle cx="96" cy="56" r="7" fill="#111"/>
+                <circle cx="90" cy="50" r="2.5" fill="rgba(255,255,255,0.18)"/>
+                <!-- Camera lens 3 (telephoto) -->
+                <circle cx="56" cy="96" r="16" fill="#1a1a1a"/>
+                <circle cx="56" cy="96" r="11" fill="#2e2e3a"/>
+                <circle cx="56" cy="96" r="7" fill="#111"/>
+                <circle cx="50" cy="90" r="2.5" fill="rgba(255,255,255,0.18)"/>
+                <!-- Flash -->
+                <circle cx="96" cy="96" r="9" fill="#2a2a2a"/>
+                <circle cx="96" cy="96" r="5.5" fill="#ffe8a0" opacity="0.7"/>
+                <!-- Apple logo area (subtle indent) -->
+                <circle cx="130" cy="290" r="18" fill="rgba(0,0,0,0.06)"/>
+                <!-- Side buttons -->
+                <!-- Volume up -->
+                <rect x="0" y="140" width="6" height="36" rx="3" fill="#333"/>
+                <!-- Volume down -->
+                <rect x="0" y="186" width="6" height="36" rx="3" fill="#333"/>
+                <!-- Mute/action -->
+                <rect x="0" y="112" width="6" height="20" rx="3" fill="#333"/>
+                <!-- Power button -->
+                <rect x="254" y="158" width="6" height="52" rx="3" fill="#333"/>
+                <!-- Design content area -->
+                <foreignObject x="12" y="136" width="236" height="260" clip-path="url(#phoneBkClip)">
+                  <div xmlns="http://www.w3.org/1999/xhtml" id="canvasContent" style="width:100%;height:100%;position:relative;pointer-events:auto;">
+                    <div id="canvasHint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;">
+                      <div style="font-size:28px;opacity:0.3;">✏️</div>
+                      <span style="font-size:9px;color:rgba(0,0,0,0.4);text-align:center;padding:0 20px;line-height:1.6;">Add text &amp; stickers</span>
+                    </div>
+                  </div>
+                </foreignObject>
+                <clipPath id="phoneBkClip">
+                  <rect x="12" y="136" width="236" height="260" rx="8"/>
+                </clipPath>
+                <defs>
+                  <linearGradient id="phoneSheen" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fff"/>
+                    <stop offset="100%" stop-color="#000"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <!-- ── AIRPODS CASE SVG ── -->
+              <svg id="svgAirpods" class="cs-phone-svg" viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" aria-label="AirPods case design canvas" style="display:none;width:160px;">
+                <!-- Outer case body -->
+                <rect x="10" y="10" width="200" height="260" rx="38" ry="38" fill="#222"/>
+                <!-- Case surface (colorable) -->
+                <rect x="18" y="18" width="184" height="244" rx="32" ry="32" id="caseColorAirpods" fill="#e8eded"/>
+                <!-- Surface sheen -->
+                <rect x="18" y="18" width="184" height="244" rx="32" ry="32" fill="url(#podSheen)" opacity="0.14"/>
+                <!-- Lid seam line -->
+                <line x1="18" y1="110" x2="202" y2="110" stroke="rgba(0,0,0,0.18)" stroke-width="1.5"/>
+                <!-- Hinge detail -->
+                <rect x="88" y="106" width="44" height="8" rx="4" fill="rgba(0,0,0,0.12)"/>
+                <!-- LED status light -->
+                <rect x="97" y="246" width="26" height="8" rx="4" fill="rgba(0,0,0,0.2)"/>
+                <rect x="99" y="248" width="22" height="4" rx="2" fill="rgba(0,200,180,0.55)"/>
+                <!-- Lightning / USB-C port -->
+                <rect x="85" y="272" width="50" height="10" rx="5" fill="rgba(0,0,0,0.18)"/>
+                <rect x="92" y="274" width="36" height="6" rx="3" fill="rgba(0,0,0,0.25)"/>
+                <!-- Left ear pod outline (inside lid) -->
+                <ellipse cx="82" cy="62" rx="22" ry="28" fill="rgba(0,0,0,0.07)"/>
+                <ellipse cx="82" cy="62" rx="14" ry="18" fill="rgba(0,0,0,0.09)"/>
+                <!-- Right ear pod outline -->
+                <ellipse cx="138" cy="62" rx="22" ry="28" fill="rgba(0,0,0,0.07)"/>
+                <ellipse cx="138" cy="62" rx="14" ry="18" fill="rgba(0,0,0,0.09)"/>
+                <!-- Design area -->
+                <foreignObject x="18" y="118" width="184" height="120" clip-path="url(#podClip)">
+                  <div xmlns="http://www.w3.org/1999/xhtml" id="canvasContentAirpods" style="width:100%;height:100%;position:relative;pointer-events:auto;">
+                    <div id="canvasHintAirpods" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;">
+                      <div style="font-size:22px;opacity:0.3;">✏️</div>
+                      <span style="font-size:8px;color:rgba(0,0,0,0.4);text-align:center;padding:0 16px;line-height:1.6;">Add text &amp; stickers</span>
+                    </div>
+                  </div>
+                </foreignObject>
+                <clipPath id="podClip">
+                  <rect x="18" y="118" width="184" height="120" rx="6"/>
+                </clipPath>
+                <defs>
+                  <linearGradient id="podSheen" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fff"/>
+                    <stop offset="100%" stop-color="#000"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+
             </div>
 
-            <div class="customization-actions">
-              <button type="button" class="secondary-button" data-customization-randomize>Surprise Me</button>
-              <button type="button" class="secondary-button" data-customization-reset>Reset Design</button>
-              <button type="button" class="primary-button" data-customization-submit>Preview and Submit</button>
+            <!-- Property controls for active element -->
+            <div id="activeItemControls" style="display:none; padding:12px; background:#fff; border:1px solid #e4e4e4; border-radius:12px; margin-bottom:12px; gap:16px; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+              <div style="font-size:0.75rem; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:0.5px;">Edit</div>
+              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                <label style="font-size:0.7rem; color:#888;">Size</label>
+                <input type="range" id="itemScale" min="0.3" max="4" step="0.05" value="1" style="width:100%;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                <label style="font-size:0.7rem; color:#888;">Rotate</label>
+                <input type="range" id="itemRotate" min="-180" max="180" step="1" value="0" style="width:100%;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                <label style="font-size:0.7rem; color:#888;">Opacity</label>
+                <input type="range" id="itemOpacity" min="0.1" max="1" step="0.05" value="1" style="width:100%;">
+              </div>
             </div>
-            <p class="customization-status" data-customization-status aria-live="polite"></p>
+
+            <div class="cs-canvas-footer">
+              <p class="cs-canvas-hint">
+                <span>+</span> Click elements to select · Drag to reposition · Click × to remove
+              </p>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <span class="cs-elem-count" id="elemCount">0 elements</span>
+                <button class="cs-clear-btn" type="button" id="clearCanvas">
+                  ↺ Clear All
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div class="customization-preview-card">
-            <div class="preview-head">
-              <strong data-preview-product-label>Mobile Back Cover</strong>
-              <span data-preview-template-label>Template: Neon Wave</span>
+          <!-- ── RIGHT: Order summary ── -->
+          <aside class="cs-order-panel" aria-label="Your order summary">
+            <h3>Your Order</h3>
+
+            <div class="cs-order-item">
+              <div class="cs-order-thumb" id="orderThumb">📱</div>
+              <div>
+                <div class="cs-order-item-label">Phone Cover</div>
+                <div class="cs-order-item-name" id="orderProductName">iPhone 15 / 15 Plus Back Cover</div>
+                <div class="cs-order-item-color">
+                  <span class="cs-order-item-color-dot" id="orderColorDot" style="background:#e8eded;"></span>
+                  <span id="orderColorName">Crystal Clear</span>
+                </div>
+              </div>
             </div>
-            <div class="preview-canvas-wrap">
-              <canvas width="420" height="420" data-customization-canvas aria-label="Customization preview canvas"></canvas>
+
+            <div class="cs-price-list">
+              <div class="cs-price-row">
+                <span>Base price</span>
+                <span id="orderBasePrice">$24.99</span>
+              </div>
+              <div class="cs-price-row">
+                <span>Custom design</span>
+                <span class="cs-price-free">Free</span>
+              </div>
+              <div class="cs-price-row">
+                <span>Shipping</span>
+                <span class="cs-price-free">Free</span>
+              </div>
+              <div class="cs-price-row total">
+                <span>Per unit</span>
+                <span id="orderUnitPrice">$24.99</span>
+              </div>
             </div>
-            <div class="preview-meta-row">
-              <span>Live preview</span>
-              <span>Stickers: <strong data-sticker-count>0</strong>/6</span>
+
+            <div class="cs-qty-row">
+              <span class="cs-qty-label">Quantity</span>
+              <div class="cs-qty-controls" aria-label="Quantity selector">
+                <button class="cs-qty-btn" type="button" id="qtyDown" aria-label="Decrease quantity">−</button>
+                <span class="cs-qty-num" id="qtyNum" aria-live="polite">1</span>
+                <button class="cs-qty-btn" type="button" id="qtyUp" aria-label="Increase quantity">+</button>
+              </div>
+              <span class="cs-qty-total" id="orderTotal">$24.99</span>
             </div>
-            <div class="preview-insights" aria-live="polite">
-              <span data-customization-insight-text>Text: none</span>
-              <span data-customization-insight-font>Font: Space Grotesk</span>
-              <span data-customization-insight-accent>No visual effect</span>
-            </div>
-            <div class="preview-actions">
-              <button type="button" class="preview-action-button" data-customization-download>Download PNG</button>
-              <button type="button" class="preview-action-button" data-customization-copy-summary>Copy Design Summary</button>
-            </div>
-            <p class="preview-note">Drag stickers to reposition. Tap a sticker to select and edit it. When submitted, the design is saved and sent to order processing.</p>
-          </div>
-        </div>
-      </article>
-    </section>
+
+            <button class="cs-order-cta" type="button" id="previewOrderBtn">
+              👁 Preview &amp; Order
+            </button>
+            <button class="cs-change-btn" type="button" id="changeProductBtn">
+              ‹ Change Product
+            </button>
+
+            <ul class="cs-benefits" aria-label="Order benefits">
+              <li>
+                <span class="cs-benefit-icon" style="background:#e8f5f5;color:#0d7377;">🔵</span>
+                30-day design guarantee
+              </li>
+              <li>
+                <span class="cs-benefit-icon" style="background:#fff0e0;color:#e87030;">🟠</span>
+                Vibrant UV-resistant print
+              </li>
+              <li>
+                <span class="cs-benefit-icon" style="background:#fff5e0;color:#c87820;">🟡</span>
+                Ships in 5–7 business days
+              </li>
+              <li>
+                <span class="cs-benefit-icon" style="background:#e8eeff;color:#3060c8;">🔷</span>
+                Free redesign if unsatisfied
+              </li>
+            </ul>
+          </aside>
+
+        </div><!-- /.cs-studio-layout -->
+      </section>
+
+    </div><!-- /.cs-shell -->
   </main>
 
+  <!-- Help button -->
+  <button class="cs-help-btn" type="button" aria-label="Get help">?</button>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
   <footer class="home-footer" id="support">
     <div class="shell footer-support-strip">
       <article>
@@ -251,30 +1484,29 @@
       </article>
       <article>
         <div class="support-icon">↔</div>
-        <a href="#">Shipping, Delivery & Pickup</a>
+        <a href="#">Shipping, Delivery &amp; Pickup</a>
       </article>
       <article>
         <div class="support-icon">↺</div>
-        <a href="#">Returns & Exchanges</a>
+        <a href="#">Returns &amp; Exchanges</a>
       </article>
       <article>
         <div class="support-icon">$</div>
         <a href="#">Price Match Guarantee</a>
       </article>
     </div>
-
     <div class="shell footer-columns">
       <div class="footer-links-grid">
         <div>
-          <h3>Order & Purchases</h3>
+          <h3>Order &amp; Purchases</h3>
           <a href="#">Check order status</a>
-          <a href="#">Shipping, delivery & pickup</a>
-          <a href="#">Returns & exchanges</a>
+          <a href="#">Shipping, delivery &amp; pickup</a>
+          <a href="#">Returns &amp; exchanges</a>
           <a href="#">Trade-in program</a>
           <a href="#">Gift cards</a>
         </div>
         <div>
-          <h3>Support & Services</h3>
+          <h3>Support &amp; Services</h3>
           <a href="#">Visit support center</a>
           <a href="#">Shop with an expert</a>
           <a href="#">Schedule a service</a>
@@ -282,22 +1514,13 @@
           <a href="#">Contact us</a>
         </div>
         <div>
-          <h3>Rewards & Membership</h3>
+          <h3>Rewards &amp; Membership</h3>
           <a href="#">Nexium Plus</a>
           <a href="#">Earn points on every purchase</a>
-          <a href="#">Redeem for discounts, promos & free accessories</a>
+          <a href="#">Redeem for discounts, promos &amp; free accessories</a>
           <a href="#">Saved items</a>
         </div>
-        <div>
-          <h3>About Nexium</h3>
-          <a href="docs/project-charter.md">Project Charter</a>
-          <a href="docs/solution-architecture.md">Solution Architecture</a>
-          <a href="docs/release-plan.md">Release Plan</a>
-          <a href="docs/ui-ux-design-specification.md">UI/UX Specification</a>
-          <a href="#">Corporate responsibility</a>
-        </div>
       </div>
-
       <aside class="footer-panel">
         <a class="signin-link" href="#">Sign in or Create Account</a>
         <div class="footer-panel-block">
@@ -312,17 +1535,644 @@
           <p>Track orders, manage alerts, and browse premium tech on the go.</p>
         </div>
         <div class="social-row">
-          <span>◉</span>
-          <span>◎</span>
-          <span>◌</span>
-          <span>◍</span>
-          <span>◐</span>
-          <span>◒</span>
+          <span>◉</span><span>◎</span><span>◌</span><span>◍</span><span>◐</span><span>◒</span>
         </div>
       </aside>
     </div>
   </footer>
 
   <script src="script.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ─── Product data ─── */
+    const PRODUCTS = {
+      iphone15:    { name: 'iPhone 15 / 15 Plus Back Cover', label: 'Phone Cover', type: 'phone', price: 24.99, img: 'assets/case_iphone15.png', colors: ['#e8eded','#111','#f5e0e0','#dce9f5','#e5eed9'], colorNames: ['Crystal Clear','Midnight Black','Blush Pink','Ocean Blue','Fresh Green'] },
+      iphone15pro: { name: 'iPhone 15 Pro / Pro Max Back Cover', label: 'Phone Cover', type: 'phone', price: 29.99, img: 'assets/case_iphone15pro.png', colors: ['#f5f5f5','#888','#111','#c8a87a'], colorNames: ['White Ti','Natural Ti','Black Ti','Desert Ti'] },
+      galaxys24:   { name: 'Samsung Galaxy S24 / S24+ Cover', label: 'Phone Cover', type: 'phone', price: 22.99, img: 'assets/case_galaxys24.png', colors: ['#f5f5f5','#111','#e8d0e8','#b8e0d8','#dce0e8'], colorNames: ['Marble White','Onyx Black','Violet','Jade','Cobalt'] },
+      pixel8:      { name: 'Google Pixel 8 / 8 Pro Back Cover', label: 'Phone Cover', type: 'phone', price: 21.99, img: 'assets/case_pixel8.png', colors: ['#f5f5f5','#111','#3a7a5a','#e8a090'], colorNames: ['Snow','Obsidian','Hazel','Coral'] },
+      airpods23:   { name: 'AirPods (2nd & 3rd Gen) Case', label: 'AirPods Case', type: 'airpods', price: 19.99, img: 'assets/case_airpods23.png', colors: ['#f5f5f5','#111','#f5a0a0','#a0c0f5','#a0e0c0'], colorNames: ['White','Black','Pink','Blue','Mint'] },
+      airpodspro:  { name: 'AirPods Pro (1st & 2nd Gen) Case', label: 'AirPods Case', type: 'airpods', price: 22.99, img: 'assets/case_airpodspro.png', colors: ['#f5f5f5','#e0d0f0','#f5a0a0','#a0c0f5'], colorNames: ['White','Lavender','Pink','Blue'] },
+    };
+
+    let selectedProduct = null;
+    let selectedColor   = 0;
+    let quantity        = 1;
+    let elemCount       = 0;
+
+    /* ─── Views ─── */
+    const viewSelect = document.getElementById('view-select');
+    const viewDesign = document.getElementById('view-design');
+
+    function showView(view) {
+      viewSelect.style.display = (view === 'select') ? 'block' : 'none';
+      viewDesign.style.display = (view === 'design') ? 'block' : 'none';
+      updateStepIndicator(view);
+      if (view === 'select') window.scrollTo({ top: 0, behavior: 'smooth' });
+      else document.getElementById('view-design').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateStepIndicator(view) {
+      const s1 = document.getElementById('step1');
+      const s2 = document.getElementById('step2');
+      const s3 = document.getElementById('step3');
+      s1.classList.remove('is-active','is-done');
+      s2.classList.remove('is-active','is-done');
+      s3.classList.remove('is-active','is-done');
+      if (view === 'select') {
+        s1.classList.add('is-active');
+        s1.querySelector('.cs-step-num').textContent = '1';
+      } else {
+        s1.classList.add('is-done');
+        s1.querySelector('.cs-step-num').innerHTML = '✓';
+        s2.classList.add('is-active');
+      }
+    }
+
+    /* ─── Product selection ─── */
+    document.querySelectorAll('.cs-product-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const productKey = card.dataset.product;
+        openDesignStudio(productKey);
+      });
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openDesignStudio(card.dataset.product);
+        }
+      });
+    });
+
+    function openDesignStudio(productKey) {
+      selectedProduct = PRODUCTS[productKey];
+      if (!selectedProduct) return;
+      selectedColor = 0;
+      quantity = 1;
+
+      // Reset canvas state fully
+      if(document.getElementById('canvasContent')) {
+        document.getElementById('canvasContent').innerHTML = '<div id="canvasHint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;"><div style="font-size:28px;opacity:0.3;">✏️</div><span style="font-size:9px;color:rgba(0,0,0,0.4);text-align:center;padding:0 20px;line-height:1.6;">Add text &amp; stickers</span></div>';
+      }
+      if(document.getElementById('canvasContentAirpods')) {
+        document.getElementById('canvasContentAirpods').innerHTML = '<div id="canvasHintAirpods" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;"><div style="font-size:22px;opacity:0.3;">✏️</div><span style="font-size:8px;color:rgba(0,0,0,0.4);text-align:center;padding:0 16px;line-height:1.6;">Add text &amp; stickers</span></div>';
+      }
+      if (typeof activeElement !== 'undefined') activeElement = null;
+      if (document.getElementById('activeItemControls')) document.getElementById('activeItemControls').style.display = 'none';
+      if (typeof elemCount !== 'undefined') elemCount = 0;
+      if (document.getElementById('elemCount')) document.getElementById('elemCount').textContent = '0 elements';
+
+      switchCanvas(selectedProduct.type);
+      renderOrderPanel();
+      buildColorDots();
+      // Title: strip "Back Cover" / "Case" and add product-type label
+      const isAirpods = selectedProduct.type === 'airpods';
+      const shortName = selectedProduct.name
+        .replace(' Back Cover', '')
+        .replace(' Case', '');
+      document.getElementById('canvasProductTitle').textContent =
+        shortName + (isAirpods ? ' Case' : ' Cover');
+      document.getElementById('canvasProductSubtitle').textContent = selectedProduct.label;
+      document.getElementById('qtyNum').textContent = '1';
+      showView('design');
+    }
+
+    /* ─── Switch canvas shape ─── */
+    function switchCanvas(type) {
+      const svgPhone   = document.getElementById('svgPhone');
+      const svgAirpods = document.getElementById('svgAirpods');
+      if (type === 'airpods') {
+        svgPhone.style.display   = 'none';
+        svgAirpods.style.display = '';
+      } else {
+        svgPhone.style.display   = '';
+        svgAirpods.style.display = 'none';
+      }
+    }
+
+    /* ─── Color dots ─── */
+    function buildColorDots() {
+      const row = document.querySelector('.cs-color-row');
+      // Remove existing dots (keep label)
+      row.querySelectorAll('.cs-color-dot').forEach(d => d.remove());
+      const label = row.querySelector('.cs-color-name');
+      selectedProduct.colors.forEach((hex, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'cs-color-dot' + (i === 0 ? ' is-active' : '');
+        dot.style.background = hex;
+        dot.title = selectedProduct.colorNames[i];
+        dot.dataset.colorIdx = i;
+        dot.tabIndex = 0;
+        dot.addEventListener('click', () => selectColor(i));
+        dot.addEventListener('keydown', e => { if (e.key === 'Enter') selectColor(i); });
+        row.insertBefore(dot, label);
+      });
+      updateColorName();
+    }
+
+    function selectColor(idx) {
+      selectedColor = idx;
+      document.querySelectorAll('.cs-color-dot').forEach((d, i) => {
+        d.classList.toggle('is-active', parseInt(d.dataset.colorIdx) === idx);
+      });
+      updateColorName();
+      updateCaseColor();
+      renderOrderPanel();
+    }
+
+    function updateColorName() {
+      if (!selectedProduct) return;
+      const name = selectedProduct.colorNames[selectedColor] || '';
+      document.getElementById('colorName').textContent = name;
+    }
+
+    function updateCaseColor() {
+      if (!selectedProduct) return;
+      const hex = selectedProduct.colors[selectedColor];
+      // Update whichever SVG is active
+      const phoneEl   = document.getElementById('caseColor');
+      const airpodsEl = document.getElementById('caseColorAirpods');
+      if (phoneEl)   phoneEl.setAttribute('fill', hex);
+      if (airpodsEl) airpodsEl.setAttribute('fill', hex);
+    }
+
+    /* ─── Render order panel ─── */
+    function renderOrderPanel() {
+      if (!selectedProduct) return;
+      const p = selectedProduct;
+      const colorHex  = p.colors[selectedColor];
+      const colorName = p.colorNames[selectedColor];
+      const total     = (p.price * quantity).toFixed(2);
+
+      const thumb = document.getElementById('orderThumb');
+      thumb.innerHTML = `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;background:#f8f8f8;border-radius:10px;">`;
+      document.getElementById('orderProductName').textContent  = p.name;
+      document.getElementById('orderBasePrice').textContent    = '$' + p.price.toFixed(2);
+      document.getElementById('orderUnitPrice').textContent    = '$' + p.price.toFixed(2);
+      document.getElementById('orderTotal').textContent        = '$' + total;
+      document.getElementById('orderColorDot').style.background = colorHex;
+      document.getElementById('orderColorName').textContent    = colorName;
+      document.querySelector('.cs-order-item-label').textContent = p.label;
+    }
+
+    /* ─── Quantity controls ─── */
+    document.getElementById('qtyDown').addEventListener('click', () => {
+      if (quantity > 1) { quantity--; updateQty(); }
+    });
+    document.getElementById('qtyUp').addEventListener('click', () => {
+      if (quantity < 99) { quantity++; updateQty(); }
+    });
+    function updateQty() {
+      document.getElementById('qtyNum').textContent = quantity;
+      if (selectedProduct) {
+        document.getElementById('orderTotal').textContent = '$' + (selectedProduct.price * quantity).toFixed(2);
+      }
+    }
+
+    /* ─── Filter tabs ─── */
+    document.querySelectorAll('.cs-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cs-tab').forEach(t => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        const filter = tab.dataset.filter;
+        document.querySelectorAll('.cs-product-card').forEach(card => {
+          const match = filter === 'all' || card.dataset.type === filter;
+          card.classList.toggle('is-hidden', !match);
+        });
+      });
+    });
+
+    /* ─── Back / Change Product ─── */
+    document.getElementById('backToProducts').addEventListener('click', () => showView('select'));
+    document.getElementById('changeProductBtn').addEventListener('click', () => showView('select'));
+
+    /* ─── Sidebar tabs ─── */
+    document.querySelectorAll('.cs-sidebar-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cs-sidebar-tab').forEach(t => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        const panel = tab.dataset.panel;
+        ['templates','text','stickers','image'].forEach(p => {
+          const el = document.getElementById('panel-' + p);
+          if (el) el.style.display = (p === panel) ? 'block' : 'none';
+        });
+      });
+    });
+
+    /* ─── Template selection ─── */
+    document.querySelectorAll('.cs-template-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.cs-template-item').forEach(i => {
+          i.classList.remove('is-active');
+          i.setAttribute('aria-checked', 'false');
+        });
+        item.classList.add('is-active');
+        item.setAttribute('aria-checked', 'true');
+        applyTemplate(item.dataset.template);
+      });
+    });
+
+    function applyTemplate(key) {
+      const bgMap = { minimal:'#e8eded', nature:'#d8ecd8', gaming:'#1a1a2e', love:'#ffe0e8', cosmic:'#0a0a1a', tropical:'#e8f5d0' };
+      const bg = bgMap[key] || '#e8eded';
+      const phoneEl   = document.getElementById('caseColor');
+      const airpodsEl = document.getElementById('caseColorAirpods');
+      if (phoneEl)   phoneEl.setAttribute('fill', bg);
+      if (airpodsEl) airpodsEl.setAttribute('fill', bg);
+      // Update matching bg swatch active state
+      document.querySelectorAll('.cs-bg-swatch').forEach(s => {
+        s.classList.toggle('is-active', s.dataset.bg === bg);
+      });
+
+      // Template Specific Initial Content
+      // Clear the canvas first
+      document.getElementById('clearCanvas').click();
+      
+      setTimeout(() => {
+        if (key === 'minimal') {
+           addCanvasElement('text', 'keep it simple.', { fontSize: '18px', color: '#555555', fontFamily: '"Space Grotesk", sans-serif' });
+        } else if (key === 'nature') {
+           addCanvasElement('sticker', '🌿', { fontSize: '60px' });
+           addCanvasElement('text', 'Breathe', { fontSize: '24px', color: '#2b5e3d', fontFamily: 'Georgia, serif', top: '70%'});
+        } else if (key === 'gaming') {
+           addCanvasElement('text', 'PLAYER ONE', { fontSize: '26px', color: '#ff0055', fontFamily: 'monospace', fontWeight:'bold' });
+           addCanvasElement('sticker', '🎮', { fontSize: '50px', top: '70%' });
+        } else if (key === 'love') {
+           addCanvasElement('sticker', '💕', { fontSize: '80px', top: '40%' });
+           addCanvasElement('text', 'Forever', { fontSize: '28px', color: '#e63946', fontFamily: 'Georgia, serif', top: '65%' });
+        } else if (key === 'tropical') {
+           addCanvasElement('sticker', '🌴', { fontSize: '60px', left: '30%', top: '40%' });
+           addCanvasElement('sticker', '🥥', { fontSize: '40px', left: '70%', top: '60%' });
+        } else if (key === 'cosmic') {
+           addCanvasElement('sticker', '🚀', { fontSize: '60px', top: '30%' });
+           addCanvasElement('text', 'SPACED OUT', { fontSize: '22px', color: '#ffffff', fontFamily: '"Space Grotesk", sans-serif', top: '60%' });
+        }
+      }, 50);
+    }
+
+    /* ─── Background swatches ─── */
+    document.querySelectorAll('.cs-bg-swatch').forEach(swatch => {
+      const activate = () => {
+        document.querySelectorAll('.cs-bg-swatch').forEach(s => s.classList.remove('is-active'));
+        swatch.classList.add('is-active');
+        const phoneEl   = document.getElementById('caseColor');
+        const airpodsEl = document.getElementById('caseColorAirpods');
+        if (phoneEl)   phoneEl.setAttribute('fill', swatch.dataset.bg);
+        if (airpodsEl) airpodsEl.setAttribute('fill', swatch.dataset.bg);
+      };
+      swatch.addEventListener('click', activate);
+      swatch.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
+    });
+
+    /* ─── Interactive Canvas Engine ─── */
+    let activeElement = null;
+
+    function getActiveCanvas() {
+      return document.getElementById(selectedProduct && selectedProduct.type === 'airpods' ? 'canvasContentAirpods' : 'canvasContent');
+    }
+
+    function updateElemCount() {
+      const canvas = getActiveCanvas();
+      if (!canvas) return;
+      const count = canvas.querySelectorAll('.canvas-element').length;
+      document.getElementById('elemCount').textContent = count + ' element' + (count !== 1 ? 's' : '');
+      const hint = document.getElementById(selectedProduct && selectedProduct.type === 'airpods' ? 'canvasHintAirpods' : 'canvasHint');
+      if (hint) hint.style.display = count > 0 ? 'none' : 'flex';
+      elemCount = count;
+      if (count === 0 && document.getElementById('activeItemControls')) {
+         document.getElementById('activeItemControls').style.display = 'none';
+      }
+    }
+
+    function makeDraggable(el) {
+      let isDown = false;
+      let startX, startY, initialLeft, initialTop;
+
+      const triggerSelect = () => {
+        if (activeElement && activeElement !== el) {
+          activeElement.style.border = '';
+          const oldDel = activeElement.querySelector('.cs-del-btn');
+          if (oldDel) oldDel.style.display = 'none';
+        }
+        activeElement = el;
+        el.style.border = '1.5px dashed #0d7377';
+        const delBtn = el.querySelector('.cs-del-btn');
+        if (delBtn) delBtn.style.display = 'block';
+
+        // Show and update controls
+        const controls = document.getElementById('activeItemControls');
+        controls.style.display = 'flex';
+        document.getElementById('itemScale').value = el.dataset.scale || 1;
+        document.getElementById('itemRotate').value = el.dataset.rotate || 0;
+        document.getElementById('itemOpacity').value = el.dataset.opacity || 1;
+      };
+
+      const startDrag = (clientX, clientY) => {
+        isDown = true;
+        el.style.cursor = 'grabbing';
+        startX = clientX;
+        startY = clientY;
+        
+        // Use parsed CSS values to avoid SVG offset bugs
+        const isAirpods = selectedProduct && selectedProduct.type === 'airpods';
+        initialLeft = parseFloat(el.style.left) || (isAirpods ? 92 : 118);
+        initialTop  = parseFloat(el.style.top) || (isAirpods ? 60 : 130);
+        
+        triggerSelect();
+        // Read text properties into the sidebar if it's text
+        if(el.dataset.type === 'text') {
+          const txtNode = Array.from(el.childNodes).find(n => n.nodeType === 3);
+          if (txtNode) document.getElementById('studioText').value = txtNode.textContent;
+        }
+      };
+
+      el.addEventListener('mousedown', e => {
+        if (e.target.classList.contains('cs-del-btn') || e.target.closest('#activeItemControls')) return;
+        e.preventDefault(); // prevent text selection
+        startDrag(e.clientX, e.clientY);
+      });
+      el.addEventListener('touchstart', e => {
+        if (e.target.classList.contains('cs-del-btn') || e.target.closest('#activeItemControls')) return;
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: false });
+
+      window.addEventListener('mousemove', e => {
+        if (!isDown) return;
+        el.style.left = (initialLeft + (e.clientX - startX)) + 'px';
+        el.style.top = (initialTop + (e.clientY - startY)) + 'px';
+      });
+      window.addEventListener('touchmove', e => {
+        if (!isDown) return;
+        e.preventDefault();
+        el.style.left = (initialLeft + (e.touches[0].clientX - startX)) + 'px';
+        el.style.top = (initialTop + (e.touches[0].clientY - startY)) + 'px';
+      }, { passive: false });
+
+      const endDrag = () => {
+        if(isDown) {
+           isDown = false;
+           el.style.cursor = 'grab';
+        }
+      };
+      window.addEventListener('mouseup', endDrag);
+      window.addEventListener('touchend', endDrag);
+    }
+
+    // Deselect on outside click
+    document.addEventListener('mousedown', e => {
+      if (activeElement && !activeElement.contains(e.target) && !e.target.closest('.cs-sidebar') && !e.target.closest('#activeItemControls')) {
+        activeElement.style.border = '';
+        const d = activeElement.querySelector('.cs-del-btn');
+        if (d) d.style.display = 'none';
+        activeElement = null;
+        document.getElementById('activeItemControls').style.display = 'none';
+      }
+    });
+
+    /* ─── Element Controls ─── */
+    function updateActiveElementTransform() {
+      if (!activeElement) return;
+      const s = document.getElementById('itemScale').value;
+      const r = document.getElementById('itemRotate').value;
+      const o = document.getElementById('itemOpacity').value;
+      activeElement.dataset.scale = s;
+      activeElement.dataset.rotate = r;
+      activeElement.dataset.opacity = o;
+      activeElement.style.transform = `translate(-50%, -50%) rotate(${r}deg) scale(${s})`;
+      activeElement.style.opacity = o;
+    }
+    document.getElementById('itemScale').addEventListener('input', updateActiveElementTransform);
+    document.getElementById('itemRotate').addEventListener('input', updateActiveElementTransform);
+    document.getElementById('itemOpacity').addEventListener('input', updateActiveElementTransform);
+
+    function addCanvasElement(type, content, styles = {}) {
+      const canvas = getActiveCanvas();
+      if (!canvas) return;
+
+      const el = document.createElement('div');
+      el.className = 'canvas-element';
+      el.dataset.type = type;
+      el.dataset.scale = 1;
+      el.dataset.rotate = 0;
+      el.dataset.opacity = 1;
+      el.style.position = 'absolute';
+      const isAirpods = selectedProduct && selectedProduct.type === 'airpods';
+      el.style.left = (isAirpods ? 92 : 118) + 'px';
+      el.style.top  = (isAirpods ? 60 : 130) + 'px';
+      el.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(1)';
+      el.style.opacity = '1';
+      el.style.cursor = 'grab';
+      el.style.userSelect = 'none';
+      el.style.whiteSpace = 'nowrap';
+      el.style.padding = '4px';
+
+      for (let k in styles) el.style[k] = styles[k];
+
+      if (type === 'text' || type === 'sticker') {
+        el.appendChild(document.createTextNode(content));
+      } else if (type === 'image') {
+        const img = document.createElement('img');
+        img.src = content;
+        img.style.maxWidth = '100px';
+        img.style.maxHeight = '140px';
+        img.style.pointerEvents = 'none'; // div takes the drag
+        img.style.borderRadius = '8px';
+        el.appendChild(img);
+      }
+
+      // Delete button
+      const delBtn = document.createElement('button');
+      delBtn.className = 'cs-del-btn';
+      delBtn.innerHTML = '×';
+      delBtn.style.position = 'absolute';
+      delBtn.style.top = '-10px';
+      delBtn.style.right = '-10px';
+      delBtn.style.background = '#e74c3c';
+      delBtn.style.color = '#fff';
+      delBtn.style.border = 'none';
+      delBtn.style.borderRadius = '50%';
+      delBtn.style.width = '20px';
+      delBtn.style.height = '20px';
+      delBtn.style.fontSize = '14px';
+      delBtn.style.lineHeight = '1';
+      delBtn.style.cursor = 'pointer';
+      delBtn.style.display = 'none';
+      delBtn.addEventListener('mousedown', e => e.stopPropagation()); // prevent drag logic
+      delBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        el.remove();
+        if(activeElement === el) {
+           activeElement = null;
+           document.getElementById('activeItemControls').style.display = 'none';
+        }
+        updateElemCount();
+      });
+
+      el.appendChild(delBtn);
+      canvas.appendChild(el);
+      makeDraggable(el);
+      updateElemCount();
+
+      // Auto-select the newly added element
+      if (activeElement) {
+         activeElement.style.border = '';
+         const oldDel = activeElement.querySelector('.cs-del-btn');
+         if(oldDel) oldDel.style.display = 'none';
+      }
+      activeElement = el;
+      el.style.border = '1.5px dashed #0d7377';
+      delBtn.style.display = 'block';
+
+      // Show controls when adding
+      const controls = document.getElementById('activeItemControls');
+      if (controls) {
+         controls.style.display = 'flex';
+         document.getElementById('itemScale').value = el.dataset.scale || 1;
+         document.getElementById('itemRotate').value = el.dataset.rotate || 0;
+         document.getElementById('itemOpacity').value = el.dataset.opacity || 1;
+      }
+    }
+
+    /* ─── Add Text ─── */
+    const fontMap = {
+      'manrope': '"Manrope", sans-serif',
+      'space-grotesk': '"Space Grotesk", sans-serif',
+      'serif': 'Georgia, serif',
+      'mono': 'monospace'
+    };
+    
+    document.getElementById('addTextBtn').addEventListener('click', () => {
+      const text = document.getElementById('studioText').value || 'Hello';
+      addCanvasElement('text', text, {
+        color: document.getElementById('studioColor').value,
+        fontSize: document.getElementById('studioSize').value + 'px',
+        fontFamily: fontMap[document.getElementById('studioFont').value],
+        fontWeight: 'bold'
+      });
+      document.getElementById('studioText').value = ''; // clear input
+    });
+
+    // Live update active text element if one is selected
+    function updateActiveText() {
+      if (activeElement && activeElement.dataset.type === 'text') {
+         const txtNode = Array.from(activeElement.childNodes).find(n => n.nodeType === 3);
+         const val = document.getElementById('studioText').value;
+         if (txtNode && val) txtNode.textContent = val;
+         activeElement.style.color = document.getElementById('studioColor').value;
+         activeElement.style.fontSize = document.getElementById('studioSize').value + 'px';
+         activeElement.style.fontFamily = fontMap[document.getElementById('studioFont').value];
+      }
+    }
+    document.getElementById('studioText').addEventListener('input', updateActiveText);
+    document.getElementById('studioFont').addEventListener('change', updateActiveText);
+    document.getElementById('studioColor').addEventListener('input', updateActiveText);
+    document.getElementById('studioSize').addEventListener('input', updateActiveText);
+
+    /* ─── Stickers ─── */
+    document.querySelectorAll('.cs-sticker-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        addCanvasElement('sticker', btn.dataset.sticker, { fontSize: '40px' });
+        btn.style.transform = 'scale(0.88)';
+        setTimeout(() => { btn.style.transform = ''; }, 180);
+      });
+    });
+
+    /* ─── Image Upload ─── */
+    document.getElementById('studioImageUpload').addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        if(file.size > 8 * 1024 * 1024) { alert('Image too large. Max 8MB.'); return; }
+        const reader = new FileReader();
+        reader.onload = e => addCanvasElement('image', e.target.result);
+        reader.readAsDataURL(file);
+      }
+      this.value = ''; // reset
+    });
+
+    /* ─── Clear canvas ─── */
+    document.getElementById('clearCanvas').addEventListener('click', () => {
+      // Clear both canvases to be safe, regardless of active product
+      const c1 = document.getElementById('canvasContent');
+      const c2 = document.getElementById('canvasContentAirpods');
+      if(c1) c1.querySelectorAll('.canvas-element').forEach(el => el.remove());
+      if(c2) c2.querySelectorAll('.canvas-element').forEach(el => el.remove());
+      
+      activeElement = null;
+      document.getElementById('activeItemControls').style.display = 'none';
+      updateElemCount();
+    });
+
+    /* ─── Preview & Order (Add to Cart) ─── */
+    document.getElementById('previewOrderBtn').addEventListener('click', () => {
+      if (!selectedProduct) return;
+      
+      const cartItem = {
+        id: 'cust_' + Date.now(),
+        name: selectedProduct.name + ' (Custom Design)',
+        price: selectedProduct.price,
+        quantity: quantity,
+        color: selectedProduct.colorNames[selectedColor],
+        image: selectedProduct.img, // In a real app, this would be a rendered snapshot
+        type: 'custom'
+      };
+
+      // Get existing cart
+      const existingCartStr = localStorage.getItem('cart');
+      let cartItems = [];
+      if (existingCartStr) {
+        try { cartItems = JSON.parse(existingCartStr); } catch(e){}
+      }
+      
+      cartItems.push(cartItem);
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+
+      // Show success overlay instead of alert
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.background = 'rgba(0,0,0,0.5)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.zIndex = '9999';
+      overlay.innerHTML = `
+        <div style="background:#fff; border-radius:24px; padding:40px; text-align:center; max-width:400px; box-shadow:0 24px 48px rgba(0,0,0,0.2);">
+          <div style="font-size:48px; margin-bottom:16px;">🎉</div>
+          <h2 style="font-family:'Space Grotesk',sans-serif; margin:0 0 12px; color:#111;">Added to Cart!</h2>
+          <p style="color:#555; margin:0 0 24px;">Your custom design for the <strong>${cartItem.color} ${cartItem.name}</strong> has been saved.</p>
+          <div style="display:flex; gap:12px; justify-content:center;">
+             <button id="overlayShopBtn" style="padding:12px 24px; border-radius:12px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600;">Keep Shopping</button>
+             <button id="overlayCartBtn" style="padding:12px 24px; border-radius:12px; border:none; background:#0d7377; color:#fff; cursor:pointer; font-weight:600;">View Cart</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      document.getElementById('overlayShopBtn').addEventListener('click', () => {
+         document.body.removeChild(overlay);
+         showView('select'); // return to product selection to shop more
+      });
+      document.getElementById('overlayCartBtn').addEventListener('click', () => {
+         // Because we don't have a dedicated cart page URL, we will refresh or redirect to index
+         alert('In the final version, this will redirect to Cart page. Redirecting to Index for now.');
+         window.location.href = 'index.html'; 
+      });
+    });
+
+    /* ─── Help button ─── */
+    document.querySelector('.cs-help-btn').addEventListener('click', () => {
+      alert('Design Studio Help:\n\n• Templates: Click to set a background color.\n• Text: Type text, select font/color, and click "Add Text".\n• Stickers: Click an emoji to drop it on the case.\n• Image: Upload any photo from your device.\n• To Move: Click and drag any added element.\n• To Delete: Select an element and click the red "×".');
+    });
+
+  })();
+  </script>
 </body>
 </html>
