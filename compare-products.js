@@ -667,32 +667,33 @@
   };
 
   const setupCompactCompareStrip = () => {
-    let originalHeight = 0;
-    const compareGridWrapper = document.getElementById("compareGridWrapper");
+    const compareGridSpacer = document.getElementById("compareGridSpacer");
 
     const updateCompactState = () => {
       syncHeaderOffset();
 
       if (!compactBreakpoint.matches || compareProducts.length < 2) {
         document.body.classList.remove("compact-compare");
-        if (compareGridWrapper) compareGridWrapper.style.minHeight = '';
+        if (compareGridSpacer) compareGridSpacer.style.display = 'none';
         return;
       }
 
       const shouldCompact = window.scrollY > 330;
 
       if (shouldCompact && !document.body.classList.contains("compact-compare")) {
-        if (compareGridWrapper && compareProductsGrid) {
-          originalHeight = compareProductsGrid.offsetHeight;
-          compareGridWrapper.style.minHeight = `${originalHeight}px`;
+        if (compareGridSpacer && compareProductsGrid) {
+          const originalHeight = compareProductsGrid.offsetHeight;
+          document.body.classList.add("compact-compare");
+          const newHeight = compareProductsGrid.offsetHeight;
+          compareGridSpacer.style.height = `${originalHeight - newHeight}px`;
+          compareGridSpacer.style.display = 'block';
         }
       } else if (!shouldCompact && document.body.classList.contains("compact-compare")) {
-        if (compareGridWrapper) {
-          compareGridWrapper.style.minHeight = '';
+        document.body.classList.remove("compact-compare");
+        if (compareGridSpacer) {
+          compareGridSpacer.style.display = 'none';
         }
       }
-
-      document.body.classList.toggle("compact-compare", shouldCompact);
     };
 
     syncCompactCompareState = updateCompactState;
