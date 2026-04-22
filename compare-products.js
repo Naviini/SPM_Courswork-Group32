@@ -667,15 +667,31 @@
   };
 
   const setupCompactCompareStrip = () => {
+    let originalHeight = 0;
+    const compareGridWrapper = document.getElementById("compareGridWrapper");
+
     const updateCompactState = () => {
       syncHeaderOffset();
 
       if (!compactBreakpoint.matches || compareProducts.length < 2) {
         document.body.classList.remove("compact-compare");
+        if (compareGridWrapper) compareGridWrapper.style.minHeight = '';
         return;
       }
 
       const shouldCompact = window.scrollY > 330;
+
+      if (shouldCompact && !document.body.classList.contains("compact-compare")) {
+        if (compareGridWrapper && compareProductsGrid) {
+          originalHeight = compareProductsGrid.offsetHeight;
+          compareGridWrapper.style.minHeight = `${originalHeight}px`;
+        }
+      } else if (!shouldCompact && document.body.classList.contains("compact-compare")) {
+        if (compareGridWrapper) {
+          compareGridWrapper.style.minHeight = '';
+        }
+      }
+
       document.body.classList.toggle("compact-compare", shouldCompact);
     };
 
